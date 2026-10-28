@@ -56,7 +56,7 @@ from ctypes import wintypes
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ---------- Movimiento ----------
-TICK_MS = 15               # ~60 cuadros por segundo
+TICK_MS = 16               # ~60 cuadros por segundo (ritmo parejo, ver App.loop)
 WALK_SPEED = 75            # px por segundo
 RUN_SPEED = 180
 CLIMB_SPEED = 85
@@ -212,9 +212,9 @@ TRIVIA = [
 FLY_SPEED = 230            # px por segundo
 FLY_SECONDS = (6, 14)      # cuánto vuela cada vez
 PARTICLE_COLORS = ["#e2c6ff", "#c08bff", "#a064ff", "#7a3fe0"]   # el último es el más oscuro
-PARTICLE_RATE = 26         # brillitos por segundo mientras vuela
+PARTICLE_RATE = 18         # brillitos por segundo mientras vuela
 PARTICLE_LIFE = (0.5, 1.1) # segundos que dura cada brillito
-PARTICLES_MAX = 70
+PARTICLES_MAX = 50
 
 # ---------- Pelear por el mouse ----------
 MOUSE_FIGHT = True         # valor inicial (se cambia desde el menú y se recuerda)
@@ -302,7 +302,7 @@ SKIP_CLASSES = {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "Progman", "WorkerW",
                 "Windows.UI.Core.CoreWindow", "ApplicationFrameWindow_Hidden"}
 SETTINGS_FILE = os.path.join(BASE_DIR, "mascota_ajustes.json")
 SKINS_DIR = os.path.join(BASE_DIR, "skins")
-CACHE_VERSION = 5
+CACHE_VERSION = 6
 
 
 
@@ -378,6 +378,7 @@ if dwmapi:
 SWP_NOSIZE = 0x0001
 SWP_NOMOVE = 0x0002
 SWP_NOACTIVATE = 0x0010
+SWP_NOZORDER = 0x0004
 HWND_TOPMOST = wintypes.HWND(-1)
 GA_ROOT = 2
 GWL_EXSTYLE = -20
@@ -417,7 +418,26 @@ def is_cloaked(hwnd):
     return val.value != 0
 
 
+_CACHE_TTL = 0.012           # en un mismo cuadro, todas las mascotas comparten la respuesta
+_rect_cache = {}
+_ok_cache = {}
+
+
 def visible_rect(hwnd):
+    """Rectángulo visible de la ventana (con caché de un cuadro: varias mascotas sobre
+    la misma ventana no le preguntan a Windows cada una)."""
+    now = time.perf_counter()
+    hit = _rect_cache.get(hwnd)
+    if hit and now - hit[0] < _CACHE_TTL:
+        return hit[1]
+    r = _visible_rect(hwnd)
+    if len(_rect_cache) > 400:
+        _rect_cache.clear()
+    _rect_cache[hwnd] = (now, r)
+    return r
+
+
+def _visible_rect(hwnd):
     """Rectángulo visible de la ventana (sin los bordes invisibles de Windows 10/11)."""
     r = RECT()
     ok = False
@@ -466,6 +486,24 @@ def list_windows(own_hwnd):
 
 
 def window_ok(hwnd):
+    """window_ok con caché de un cuadro."""
+    now = time.perf_counter()
+    hit = _ok_cache.get(hwnd)
+    if hit and now - hit[0] < _CACHE_TTL:
+        return hit[1]
+    v = _window_ok(hwnd)
+    if len(_ok_cache) > 400:
+        _ok_cache.clear()
+    _ok_cache[hwnd] = (now, v)
+    return v
+
+
+def forget_window_cache():
+    _rect_cache.clear()
+    _ok_cache.clear()
+
+
+def _window_ok(hwnd):
     """True si la ventana sigue existiendo, visible y en tamaño normal."""
     return bool(hwnd and user32.IsWindow(hwnd) and user32.IsWindowVisible(hwnd)
                 and not user32.IsIconic(hwnd) and not user32.IsZoomed(hwnd)
@@ -478,10 +516,12 @@ def move_window_by(hwnd, dx, dy=0):
     user32.GetWindowRect(hwnd, ctypes.byref(r))
     user32.SetWindowPos(hwnd, None, r.left + int(dx), r.top + int(dy), 0, 0,
                         SWP_NOSIZE | SWP_NOACTIVATE | 0x0004)
+    _rect_cache.pop(hwnd, None)
 
 
 def move_window(hwnd, x, y):
     user32.SetWindowPos(hwnd, None, int(x), int(y), 0, 0, SWP_NOSIZE | SWP_NOACTIVATE | 0x0004)
+    _rect_cache.pop(hwnd, None)
 
 
 def mouse_down():
@@ -489,9 +529,16 @@ def mouse_down():
     return bool((user32.GetAsyncKeyState(0x01) | user32.GetAsyncKeyState(0x02)) & 0x8000)
 
 
+_cursor_cache = [0.0, (0, 0)]
+
+
 def cursor_pos():
+    now = time.perf_counter()
+    if now - _cursor_cache[0] < 0.006:
+        return _cursor_cache[1]
     p = POINT()
     user32.GetCursorPos(ctypes.byref(p))
+    _cursor_cache[0], _cursor_cache[1] = now, (p.x, p.y)
     return p.x, p.y
 
 
@@ -759,6 +806,27 @@ def fill_holes(mask, pixels, tol):
         if x < w - 1: stack.append((x + 1, y))
         if y > 0: stack.append((x, y - 1))
         if y < h - 1: stack.append((x, y + 1))
+    # cómo es el fondo de verdad (lo que rodea a las figuras): tonos claros neutros
+    vals = []
+    for y in range(0, h, 3):
+        orow, prow = outside[y], pixels[y]
+        for x in range(0, w, 3):
+            if orow[x]:
+                r, g, b = rgb(prow[x])
+                if max(r, g, b) - min(r, g, b) <= 10:
+                    vals.append((r + g + b) // 3)
+    vals.sort()
+    if vals:
+        lo_v = vals[int(len(vals) * 0.03)] - 3
+        mid_v = vals[len(vals) // 2]
+        uniform = vals[int(len(vals) * 0.97)] - vals[int(len(vals) * 0.03)] < 8
+    else:
+        lo_v, mid_v, uniform = 250, 252, True
+
+    def bg_like(c):
+        r, g, b = rgb(c)
+        return max(r, g, b) - min(r, g, b) <= 10 and (r + g + b) // 3 >= lo_v
+
     seen = [bytearray(w) for _ in range(h)]
     for y in range(h):
         for x in range(w):
@@ -775,19 +843,41 @@ def fill_holes(mask, pixels, tol):
                             not outside[ny][nx] and not seen[ny][nx]:
                         seen[ny][nx] = 1
                         stack.append((nx, ny))
-            like = sum(1 for cx, cy in comp if is_bg_pixel(pixels[cy][cx]))
-            if like < len(comp) * 0.85:              # no es un hueco de fondo: es figura
+            n = len(comp)
+            like = dark = 0
+            for cx, cy in comp:
+                c = pixels[cy][cx]
+                if bg_like(c):
+                    like += 1
+                    r, g, b = rgb(c)
+                    if (r + g + b) // 3 < mid_v - 1:
+                        dark += 1
+            if n < 30:                                   # brillitos de ojos, etc.
+                is_bg = False
+            elif uniform:
+                is_bg = like >= n * 0.85
+            else:                                        # cuadritos: tiene de los dos tonos
+                is_bg = like >= n * 0.85 and 0.12 <= dark / float(max(1, like)) <= 0.92
+            if not is_bg:
                 for cx, cy in comp:
                     mask[cy][cx] = 1
-    # además: zonas claras pegadas al fondo pero que no son del tono del fondo
-    # (camisa blanca que toca el borde de la figura) se recuperan si están rodeadas
-    # de figura en casi todos lados
-    for y in range(1, h - 1):
-        row, up, dn, prow = mask[y], mask[y - 1], mask[y + 1], pixels[y]
-        for x in range(1, w - 1):
-            if not row[x] and outside[y][x] and not is_bg_pixel(prow[x]):
-                if (row[x - 1] + row[x + 1] + up[x] + dn[x]) >= 3:
-                    row[x] = 1
+    # orillas: quita el halo claro que queda entre el contorno oscuro y el fondo
+    for _ in range(2):
+        strip = []
+        for y in range(1, h - 1):
+            row, prow = mask[y], pixels[y]
+            for x in range(1, w - 1):
+                if not row[x]:
+                    continue
+                if not (outside[y][x - 1] or outside[y][x + 1] or outside[y - 1][x] or
+                        outside[y + 1][x]):
+                    continue
+                r, g, b = rgb(prow[x])
+                if max(r, g, b) - min(r, g, b) <= 24 and (r + g + b) // 3 >= 165:
+                    strip.append((x, y))
+        for x, y in strip:
+            mask[y][x] = 0
+            outside[y][x] = 1
 
 
 def typical_height(boxes):
@@ -1232,10 +1322,10 @@ def crop_box(mask, x0, y0, x1, y1):
             seen.add((x, y))
             stack = [(x, y)]
             b = [x, y, x, y]
-            n = 0
+            pts = []
             while stack:
                 cx, cy = stack.pop()
-                n += 1
+                pts.append((cx, cy))
                 b = [min(b[0], cx), min(b[1], cy), max(b[2], cx), max(b[3], cy)]
                 for ny in (cy - 1, cy, cy + 1):
                     for nx in (cx - 1, cx, cx + 1):
@@ -1243,17 +1333,20 @@ def crop_box(mask, x0, y0, x1, y1):
                                 and (nx, ny) not in seen:
                             seen.add((nx, ny))
                             stack.append((nx, ny))
-            comps.append((n, b))
+            comps.append((len(pts), b, pts))
     if not comps:
         return None
     comps.sort(key=lambda c: -c[0])
     box = list(comps[0][1])
+    keep = list(comps[0][2])
     mx = (box[2] - box[0]) * 0.1
-    for n, b in comps[1:]:
-        if n >= 6 and b[0] <= box[2] + mx and b[2] >= box[0] - mx and \
+    for n, b, pts in comps[1:]:
+        cut = b[0] <= x0 or b[2] >= x1 or b[1] <= y0 or b[3] >= y1   # pedazo de la vecina
+        if n >= 6 and not cut and b[0] <= box[2] + mx and b[2] >= box[0] - mx and \
                 b[1] <= box[3] and b[3] >= box[1] - (box[3] - box[1]) * 0.3:
             box = [min(box[0], b[0]), min(box[1], b[1]), max(box[2], b[2]), max(box[3], b[3])]
-    return tuple(box)
+            keep += pts
+    return tuple(box), set(keep)
 
 
 def remove_pole(grid):
@@ -1306,16 +1399,16 @@ def remove_pole(grid):
             continue
         meds = [m for _x, m in g]
         for y in range(h):
-            for x in range(max(0, x0 - 2), min(w - 1, x1 + 2) + 1):
+            for x in range(max(0, x0 - 1), min(w - 1, x1 + 1) + 1):
                 c = out[y][x]
                 if not c:
                     continue
                 v = rgb(c)
                 near = min(dist(v, m) for m in meds)
                 if x0 <= x <= x1:
-                    if near <= 60 or sum(v) < 150:
+                    if near <= 60:
                         out[y][x] = None
-                elif near <= 35 or sum(v) < 120:
+                elif near <= 35:
                     out[y][x] = None
         # restos de 1 px (orillas suavizadas del poste)
         for x in range(max(1, x0 - 4), min(w - 2, x1 + 4) + 1):
@@ -1335,16 +1428,17 @@ def sheet_grids(path, animations):
         return None
     specs = animations or {"quieta": [(0, 0)], "camina": [(0, 0), (0, 1)]}
     # ["#", x0, y0, x1, y1]: recorte manual (la figura dentro de ese rectángulo de la imagen)
-    extra, crops = [], {}
+    extra, crops, crop_px = [], {}, {}
     for spec in specs.values():
         for item in spec:
             if item and item[0] == "#" and len(item) == 5:
                 key = tuple(int(v) for v in item[1:])
                 if key not in crops:
-                    box = crop_box(mask, *key)
-                    if box:
+                    got = crop_box(mask, *key)
+                    if got:
                         crops[key] = len(extra)
-                        extra.append(box)
+                        extra.append(got[0])
+                        crop_px[(len(rows), len(extra) - 1)] = got[1]
     if extra:
         rows = rows + [extra]
         specs = {name: [(len(rows) - 1, crops[tuple(int(v) for v in it[1:])])
@@ -1371,10 +1465,11 @@ def sheet_grids(path, animations):
         bw, bh = x1 - x0 + 1, y1 - y0 + 1
         ox, oy = (fw - bw) // 2, fh - bh            # centrada y apoyada abajo
         grid = [[None] * fw for _ in range(fh)]
+        only = crop_px.get((f, p))                   # recorte manual: solo sus piezas
         for yy in range(bh):
             mrow, prow = mask[y0 + yy], pixels[y0 + yy]
             for xx in range(bw):
-                if mrow[x0 + xx]:
+                if mrow[x0 + xx] and (only is None or (x0 + xx, y0 + yy) in only):
                     grid[oy + yy][ox + xx] = prow[x0 + xx]
         return grid
 
@@ -1755,6 +1850,8 @@ class Particles:
         self.visible = False
         self.colors = list(PARTICLE_COLORS)
         self.origin = None
+        self.moved = False
+        self.just_shown = False
 
     def resize(self, size):
         if size != self.size:
@@ -1799,8 +1896,15 @@ class Particles:
         if not self.visible:
             self.win.deiconify()
             self.visible = True
+            self.origin = None
         ox, oy = int(cx - self.size / 2), int(cy - self.size / 2)
-        user32.SetWindowPos(self.hwnd, HWND_TOPMOST, ox, oy, 0, 0, SWP_NOSIZE | SWP_NOACTIVATE)
+        self.moved = (ox, oy) != self.origin
+        if self.moved:                        # moverla sin reordenar ventanas (más ligero)
+            raise_ = self.origin is None
+            user32.SetWindowPos(self.hwnd, HWND_TOPMOST, ox, oy, 0, 0,
+                                SWP_NOSIZE | SWP_NOACTIVATE | (0 if raise_ else SWP_NOZORDER))
+            self.origin = (ox, oy)
+            self.just_shown = raise_
         c = self.canvas
         while len(self.items) < len(alive):
             self.items.append([c.create_oval(0, 0, 0, 0, outline="", state="hidden"),
@@ -1839,6 +1943,40 @@ class Particles:
             self.visible = False
 
 
+# ---------- Ventanitas reutilizables (crear y destruir ventanas cuesta; se reciclan) ----------
+_OVERLAY_POOL = {}
+
+
+def get_overlay(root, solid=None):
+    pool = _OVERLAY_POOL.setdefault(solid, [])
+    while pool:
+        win, canvas = pool.pop()
+        try:
+            if win.winfo_exists():
+                return win, canvas
+        except tk.TclError:
+            pass
+    return make_overlay(root, solid)
+
+
+def release_overlay(win, canvas, solid=None):
+    try:
+        canvas.delete("all")
+        win.withdraw()
+        if solid:
+            win.attributes("-alpha", 1.0)
+    except tk.TclError:
+        return
+    pool = _OVERLAY_POOL.setdefault(solid, [])
+    if len(pool) < 24:
+        pool.append((win, canvas))
+    else:
+        try:
+            win.destroy()
+        except tk.TclError:
+            pass
+
+
 # ---------- Rayo (ventana temporal que dibuja una línea brillante) ----------
 class Beam:
     """Rayo de luz de (x0, y0) a (x1, y1) que dura 'seconds' y se desvanece."""
@@ -1849,18 +1987,11 @@ class Beam:
         self.top = int(min(y0, y1) - pad)
         w = int(abs(x1 - x0) + pad * 2)
         h = int(abs(y1 - y0) + pad * 2)
-        self.win = tk.Toplevel(root)
-        self.win.overrideredirect(True)
-        self.win.attributes("-topmost", True)
-        try:
-            self.win.attributes("-transparentcolor", TRANSPARENT)
-        except tk.TclError:
-            pass
-        self.win.config(bg=TRANSPARENT)
+        self.win, self.canvas = get_overlay(root)
+        c = self.canvas
         self.win.geometry("%dx%d+%d+%d" % (w, h, self.left, self.top))
-        self.canvas = c = tk.Canvas(self.win, width=w, height=h, bg=TRANSPARENT,
-                                    highlightthickness=0, bd=0)
-        c.pack()
+        c.config(width=w, height=h)
+        self.win.deiconify()
         ax, ay, bx, by = x0 - self.left, y0 - self.top, x1 - self.left, y1 - self.top
         self.lines = []
         for frac, col in ((1.0, colors[-1]), (0.6, colors[min(1, len(colors) - 1)]),
@@ -1873,14 +2004,6 @@ class Beam:
         self.born = time.perf_counter()
         self.seconds = seconds
         self.alive = True
-        self.win.update_idletasks()
-        try:
-            hwnd = user32.GetAncestor(self.win.winfo_id(), GA_ROOT) or self.win.winfo_id()
-            ex = user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
-            user32.SetWindowLongW(hwnd, GWL_EXSTYLE,
-                                  ex | WS_EX_TRANSPARENT | WS_EX_LAYERED | WS_EX_TOOLWINDOW)
-        except Exception:
-            pass
 
     def update(self, now):
         if not self.alive:
@@ -1897,10 +2020,7 @@ class Beam:
     def destroy(self):
         if self.alive:
             self.alive = False
-            try:
-                self.win.destroy()
-            except Exception:
-                pass
+            release_overlay(self.win, self.canvas)
 
 
 # ---------- Proyectiles (lucero de Rem, cristales, carámbanos...) ----------
@@ -1948,28 +2068,10 @@ class Projectile:
         self.boom_t = 0.0
         self.spin = 0.0
         self.alive = True
-        self.win = tk.Toplevel(app.root)
-        self.win.overrideredirect(True)
-        self.win.attributes("-topmost", True)
-        try:
-            self.win.attributes("-transparentcolor", TRANSPARENT)
-        except tk.TclError:
-            pass
-        self.win.config(bg=TRANSPARENT)
-        self.canvas = tk.Canvas(self.win, width=10, height=10, bg=TRANSPARENT,
-                                highlightthickness=0, bd=0)
-        self.canvas.pack()
+        self.win, self.canvas = get_overlay(app.root)
         self.win.withdraw()
         self.shown = False
         self.geom = None
-        self.win.update_idletasks()
-        try:
-            hwnd = user32.GetAncestor(self.win.winfo_id(), GA_ROOT) or self.win.winfo_id()
-            ex = user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
-            user32.SetWindowLongW(hwnd, GWL_EXSTYLE,
-                                  ex | WS_EX_TRANSPARENT | WS_EX_LAYERED | WS_EX_TOOLWINDOW)
-        except Exception:
-            pass
 
     # --- lógica ---
     def target_center(self):
@@ -2161,10 +2263,7 @@ class Projectile:
     def destroy(self):
         if self.alive:
             self.alive = False
-            try:
-                self.win.destroy()
-            except Exception:
-                pass
+            release_overlay(self.win, self.canvas)
 
 
 # ---------- Utilería: puertas, mesa de té, platos, escarcha, corazones, trofeo... ----------
@@ -2212,7 +2311,8 @@ class Prop:
         self.alive = True
         self.shown = True
         self.geom = None
-        self.win, self.canvas = make_overlay(app.root, solid)
+        self.solid = solid
+        self.win, self.canvas = get_overlay(app.root, solid)
         self.win.withdraw()
         self.shown = False
         self.update(self.born)
@@ -2271,10 +2371,7 @@ class Prop:
     def destroy(self):
         if self.alive:
             self.alive = False
-            try:
-                self.win.destroy()
-            except Exception:
-                pass
+            release_overlay(self.win, self.canvas, self.solid)
 
 
 def ease(k):
@@ -2871,10 +2968,14 @@ class Pet:
         if self.particles.parts or self.particles.visible:
             self.particles.update(self.last_dt, self.x, self.y + self.y_off - self.BH / 2)
         pos = (int(round(self.x - self.W / 2)), int(round(self.y + self.y_off - self.H)))
-        if pos != self.win_pos or now >= self.next_topmost or self.particles.visible:
+        raise_ = now >= self.next_topmost or self.particles.just_shown
+        if pos != self.win_pos or raise_:
+            # moverse sin tocar el orden de las ventanas es mucho más ligero para Windows;
+            # cada 2 s (o si salen brillitos) se vuelve a poner hasta arriba
             user32.SetWindowPos(self.hwnd, HWND_TOPMOST, pos[0], pos[1], 0, 0,
-                                SWP_NOSIZE | SWP_NOACTIVATE)
+                                SWP_NOSIZE | SWP_NOACTIVATE | (0 if raise_ else SWP_NOZORDER))
             self.win_pos = pos
+            self.particles.just_shown = False
             if now >= self.next_topmost:
                 self.next_topmost = now + 2.0
         self.update_click_through(img)
@@ -6170,6 +6271,7 @@ class App:
         self.next_minute = now0 + 60
         self.next_dec_snow = now0 + 20
         self.next_save = now0 + 30
+        self.next_frame = now0
         self.vars = {k: tk.BooleanVar(value=bool(self.settings.get(k, v)))
                      for k, v in FLAG_DEFAULTS.items()}
         self.size_var = tk.IntVar(value=self.size_px())
@@ -6250,7 +6352,11 @@ class App:
                 self.save()
         except Exception as e:
             print("Aviso:", e)
-        self.root.after(TICK_MS, self.loop)
+        # ritmo parejo: el siguiente cuadro se agenda contra el reloj, no "15 ms después
+        # de terminar" (así no se acumula el retraso y el movimiento no da tirones)
+        self.next_frame = max(self.next_frame + TICK_MS / 1000.0, time.perf_counter() + 0.002)
+        delay = int((self.next_frame - time.perf_counter()) * 1000)
+        self.root.after(max(1, delay), self.loop)
 
     # --- mascotas ---
     def note_count(self):
