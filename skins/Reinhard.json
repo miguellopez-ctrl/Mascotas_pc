@@ -1,0 +1,382 @@
+{
+  "personaje": "Reinhard",
+  "poder": 10,
+  "velocidad": 1.6,
+  "pacificador": true,
+  "disparo": "corte",
+  "habilidades": [
+    "bendicion",
+    "minimizar",
+    "golpe_mouse",
+    "super_salto"
+  ],
+  "particulas": [
+    "#fffbe6",
+    "#ffe58a",
+    "#ffc93c",
+    "#c98a00"
+  ],
+  "colores": {
+    "bendicion": [
+      "#fffbe6",
+      "#ffe58a",
+      "#ffc93c",
+      "#c98a00"
+    ],
+    "super_salto": [
+      "#fffbe6",
+      "#ffd27a",
+      "#ff7a4d",
+      "#b8321a"
+    ]
+  },
+  "combinar_con_default": false,
+  "animaciones": {
+    "quieta": [
+      [
+        1,
+        0
+      ]
+    ],
+    "mira": [
+      [
+        0,
+        0
+      ]
+    ],
+    "gira": [
+      [
+        1,
+        0
+      ]
+    ],
+    "camina": [
+      [
+        0,
+        0,
+        15
+      ]
+    ],
+    "corre": [
+      [
+        0,
+        0,
+        15
+      ]
+    ],
+    "sentada": [
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        2
+      ]
+    ],
+    "dormida_inicio": [
+      [
+        8,
+        0,
+        4
+      ],
+      [
+        3,
+        0,
+        5
+      ]
+    ],
+    "dormida": [
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        7
+      ]
+    ],
+    "despierta": [
+      [
+        6,
+        0
+      ]
+    ],
+    "salta": [
+      [
+        4,
+        0
+      ]
+    ],
+    "cae": [
+      [
+        4,
+        2
+      ]
+    ],
+    "aterriza": [
+      [
+        4,
+        4
+      ]
+    ],
+    "trepa": [
+      [
+        5,
+        0,
+        4
+      ]
+    ],
+    "arrastrada": [
+      [
+        4,
+        3
+      ]
+    ],
+    "feliz": [
+      [
+        6,
+        0,
+        5
+      ]
+    ],
+    "extra_regalo": [
+      [
+        "@",
+        1128,
+        750
+      ]
+    ],
+    "extra_espada": [
+      [
+        "@",
+        1311,
+        747
+      ]
+    ],
+    "extra_pose": [
+      [
+        "@",
+        1223,
+        741
+      ]
+    ],
+    "extra_saluda": [
+      [
+        "@",
+        950,
+        750
+      ],
+      [
+        "@",
+        1034,
+        749
+      ],
+      [
+        "@",
+        950,
+        750
+      ],
+      [
+        "@",
+        1034,
+        749
+      ]
+    ]
+  },
+  "sin_espejo": [
+    "quieta",
+    "gira",
+    "sentada",
+    "feliz",
+    "despierta",
+    "arrastrada",
+    "salta",
+    "cae",
+    "dormida_inicio",
+    "dormida",
+    "extra_",
+    "sombra"
+  ],
+  "frases": {
+    "saludo": [
+      "Buenas. Si necesitas ayuda, aquí estoy.",
+      "Es un honor verte.",
+      "Reinhard, a tu servicio."
+    ],
+    "saludo_otra": [
+      "Buen día, {otra}.",
+      "{otra}, ¿todo bien?"
+    ],
+    "aleatorio": [
+      "Mientras yo esté aquí, nadie saldrá herido.",
+      "La fuerza es para proteger.",
+      "Me disculpo si asusté a alguien.",
+      "Hoy hace un buen día para caminar.",
+      "No hace falta desenvainar esta espada."
+    ],
+    "comer": [
+      "Muy amable, gracias.",
+      "Deliciosa. La compartiré la próxima vez."
+    ],
+    "sin_galleta": [
+      "Adelante, {otra}, es tuya.",
+      "No te preocupes por mí."
+    ],
+    "despierta": [
+      "Ya estoy listo.",
+      "Disculpa, me quedé dormido."
+    ],
+    "bendicion": [
+      "La bendición me acompaña.",
+      "Siento que hoy puedo con todo."
+    ],
+    "minimizar": [
+      "Permíteme despejar esto.",
+      "Con un solo corte bastará."
+    ],
+    "golpe_mouse": [
+      "Disculpa, eso estaba en medio.",
+      "¡Fuera!"
+    ],
+    "super_salto": [
+      "¡Arriba!",
+      "Esto no es nada."
+    ],
+    "disparo": [
+      "Un solo corte.",
+      "Con cuidado..."
+    ],
+    "pelea": [
+      "Me contendré, {otra}.",
+      "No quiero lastimarte, {otra}."
+    ],
+    "ataque": [
+      "Perdón.",
+      "Con suavidad."
+    ],
+    "golpe": [
+      "Hmm.",
+      "Interesante golpe."
+    ],
+    "resiste": [
+      "¿Estás bien? Casi no lo sentí.",
+      "No te esfuerces tanto."
+    ],
+    "esquiva": [
+      "Lo siento, {otra}, lo vi venir.",
+      "Demasiado obvio."
+    ],
+    "gana": [
+      "Buen intento, {otra}.",
+      "Lo siento. Fue una buena pelea."
+    ],
+    "pierde": [
+      "Me ganaste... ¿de verdad?",
+      "Increíble, {otra}."
+    ],
+    "interviene": [
+      "¡Basta, {otra}!",
+      "Calma, {otra}. Nadie pelea mientras yo esté aquí."
+    ],
+    "juego": [
+      "Iré despacio, {otra}."
+    ],
+    "juego_huye": [
+      "Intenta alcanzarme."
+    ],
+    "atrapa": [
+      "Te tengo, {otra}."
+    ],
+    "atrapada": [
+      "Bien hecho."
+    ],
+    "fin_juego": [
+      "Gracias por jugar.",
+      "Fue divertido."
+    ],
+    "mouse_agarra": [
+      "Lo tomaré un momento.",
+      "Con permiso."
+    ],
+    "mouse_gana": [
+      "Aquí tienes.",
+      "Te lo devuelvo."
+    ],
+    "mouse_pierde": [
+      "Me rindo.",
+      "Tú ganas."
+    ],
+    "travesura": [
+      "Perdón, eso fue cosa mía.",
+      "Me disculpo."
+    ],
+    "te_invitada": [
+      "Muy amable, {otra}.",
+      "Será un placer."
+    ],
+    "respuesta_curiosa": [
+      "No tengo nada especial, {otra}.",
+      "Solo intento hacer lo correcto."
+    ],
+    "molesta": [
+      "{otra}, no hagas daño a nadie.",
+      "Te estoy vigilando, {otra}."
+    ],
+    "cariño": [
+      "Me alegra verte bien, {otra}.",
+      "{otra}, ¿necesitas algo?"
+    ]
+  },
+  "relaciones": {
+    "Satella": {
+      "afinidad": -2,
+      "frases": {
+        "pelea": [
+          "Bruja de la envidia... no te dejaré avanzar.",
+          "Esta vez sí desenvainaré, Satella."
+        ],
+        "molesta": [
+          "Satella. No te acerques a nadie."
+        ]
+      }
+    },
+    "Echidna": {
+      "afinidad": -1,
+      "frases": {
+        "saludo_otra": [
+          "Echidna. ¿Qué tramas ahora?"
+        ],
+        "respuesta_curiosa": [
+          "No me dejaré estudiar, Echidna."
+        ]
+      }
+    },
+    "Emilia": {
+      "afinidad": 1,
+      "frases": {
+        "saludo_otra": [
+          "Emilia, un gusto verte."
+        ]
+      }
+    },
+    "Rem": {
+      "afinidad": 1
+    },
+    "Beatrice": {
+      "afinidad": 1
+    },
+    "Shaula": {
+      "afinidad": 1,
+      "frases": {
+        "saludo_otra": [
+          "Shaula, tienes mucha energía hoy."
+        ]
+      }
+    }
+  }
+}

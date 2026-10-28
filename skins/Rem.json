@@ -1,0 +1,201 @@
+{
+  "personaje": "Rem",
+  "velocidad": 1.1,
+  "habilidades": [
+    "limpiar",
+    "aura",
+    "lucero"
+  ],
+  "particulas": [
+    "#ffffff",
+    "#cfe9ff",
+    "#8fc8ff",
+    "#5f8fd0"
+  ],
+  "colores": {
+    "aura": [
+      "#ffffff",
+      "#e6f4ff",
+      "#b3dcff",
+      "#7aa8d8"
+    ],
+    "limpiar": [
+      "#ffffff",
+      "#dff3ff",
+      "#aee0ff",
+      "#7fb8e0"
+    ]
+  },
+  "frases": {
+    "saludo": [
+      "Rem está aquí.",
+      "Rem te estaba esperando.",
+      "¿Necesitas algo? Rem te ayuda."
+    ],
+    "saludo_otra": [
+      "Hola, {otra}.",
+      "{otra}, ¿ya comiste?",
+      "Rem saluda a {otra}."
+    ],
+    "aleatorio": [
+      "¿Te preparo un té?",
+      "Rem limpiará eso después.",
+      "Rem cuidará de ti.",
+      "No trabajes tanto, por favor.",
+      "Rem está orgullosa de ti."
+    ],
+    "comer": [
+      "¡Delicioso! Rem quiere la receta.",
+      "Gracias, de verdad.",
+      "Rem la disfrutó mucho."
+    ],
+    "sin_galleta": [
+      "{otra} fue más rápida...",
+      "Rem no tenía tanta hambre."
+    ],
+    "despierta": [
+      "Rem ya despertó.",
+      "Buenos días. Rem se quedó dormida..."
+    ],
+    "limpiar": [
+      "Rem dejará todo reluciente.",
+      "Hora de limpiar."
+    ],
+    "aura": [
+      "Rem va en serio.",
+      "¡Nadie se mete con los que Rem quiere!"
+    ],
+    "pelea": [
+      "Rem no perderá, {otra}.",
+      "Perdón, {otra}, pero Rem va con todo."
+    ],
+    "ataque": [
+      "¡Hah!",
+      "¡Ahí va!"
+    ],
+    "golpe": [
+      "¡Ugh!",
+      "Eso dolió..."
+    ],
+    "gana": [
+      "Rem ganó. ¿Estás bien, {otra}?",
+      "Lo siento, {otra}."
+    ],
+    "pierde": [
+      "Rem... se descuidó.",
+      "Bien hecho, {otra}."
+    ],
+    "juego": [
+      "¡Rem te alcanzará, {otra}!"
+    ],
+    "juego_huye": [
+      "¡Rem es rápida!"
+    ],
+    "atrapa": [
+      "¡Te tengo, {otra}!"
+    ],
+    "atrapada": [
+      "Ah... Rem se distrajo."
+    ],
+    "fin_juego": [
+      "Fue divertido.",
+      "Rem quiere jugar otra vez."
+    ],
+    "mouse_agarra": [
+      "Rem se lo queda un ratito.",
+      "¿Esto es tuyo?"
+    ],
+    "mouse_gana": [
+      "Aquí está, Rem lo cuidó.",
+      "Rem te lo devuelve."
+    ],
+    "mouse_pierde": [
+      "Está bien, está bien.",
+      "Rem lo suelta..."
+    ],
+    "travesura": [
+      "Rem acomodó tu ventana.",
+      "Así se ve más ordenado."
+    ],
+    "disparo": [
+      "¡Lucero del alba!",
+      "¡Ahí va la bola!",
+      "Rem no fallará."
+    ],
+    "lucero": [
+      "¡Que nadie se acerque!",
+      "¡Rem gira con todo!"
+    ],
+    "esquiva": [
+      "Rem lo vio venir.",
+      "Demasiado lento, {otra}."
+    ],
+    "te_invitada": [
+      "Rem acepta el té, {otra}.",
+      "Rem trajo galletas, {otra}."
+    ],
+    "respuesta_curiosa": [
+      "Rem no entiende la pregunta...",
+      "Rem solo quiere ser útil."
+    ]
+  },
+  "disparo": "lucero",
+  "poder": 3,
+  "relaciones": {
+    "Emilia": {
+      "afinidad": 2,
+      "frases": {
+        "saludo_otra": [
+          "Emilia-sama, Rem la cuidará.",
+          "¿Emilia-sama necesita algo?"
+        ],
+        "cariño": [
+          "Emilia-sama se ve bien hoy."
+        ]
+      }
+    },
+    "Beatrice": {
+      "afinidad": 1
+    },
+    "Satella": {
+      "afinidad": -3,
+      "frases": {
+        "molesta": [
+          "Ese olor... la bruja.",
+          "Rem no deja que te acerques."
+        ],
+        "pelea": [
+          "¡Rem no perdonará a la bruja!",
+          "¡Aléjate, Satella!"
+        ],
+        "rechaza_te": [
+          "Rem no aceptará nada de una bruja."
+        ]
+      }
+    },
+    "Echidna": {
+      "afinidad": -2,
+      "frases": {
+        "molesta": [
+          "Rem no confía en las brujas.",
+          "¿Qué quieres, Echidna?"
+        ],
+        "rechaza_te": [
+          "Rem no beberá ese té."
+        ]
+      }
+    },
+    "Reinhard": {
+      "afinidad": 1,
+      "frases": {
+        "pelea": [
+          "Rem... dará lo mejor contra el Santo de la Espada.",
+          "¿Contra Reinhard? Rem lo intentará."
+        ]
+      }
+    },
+    "Shaula": {
+      "afinidad": 0
+    }
+  }
+}

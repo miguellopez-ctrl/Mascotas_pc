@@ -1,0 +1,349 @@
+{
+  "personaje": "Satella",
+  "velocidad": 0.9,
+  "vuela": true,
+  "disparo": "mano",
+  "habilidades": [
+    "sombra",
+    "manos"
+  ],
+  "particulas": [
+    "#d9c2ff",
+    "#8a5cf0",
+    "#4a2a8a",
+    "#1a0f30"
+  ],
+  "colores": {
+    "sombra": [
+      "#c9a8ff",
+      "#7b4bd6",
+      "#3d1f6e",
+      "#140a24"
+    ],
+    "disparo": [
+      "#b48cff",
+      "#3d1f6e",
+      "#1b0f2e",
+      "#08040f"
+    ]
+  },
+  "combinar_con_default": false,
+  "animaciones": {
+    "quieta": [
+      [
+        0,
+        7
+      ]
+    ],
+    "mira": [
+      [
+        0,
+        0
+      ]
+    ],
+    "gira": [
+      [
+        0,
+        7
+      ]
+    ],
+    "camina": [
+      [
+        0,
+        0,
+        6
+      ]
+    ],
+    "corre": [
+      [
+        0,
+        0,
+        6
+      ]
+    ],
+    "sentada": [
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "dormida_inicio": [
+      [
+        5,
+        0,
+        4
+      ],
+      [
+        2,
+        0,
+        6
+      ]
+    ],
+    "dormida": [
+      [
+        2,
+        7
+      ],
+      [
+        2,
+        8
+      ]
+    ],
+    "despierta": [
+      [
+        4,
+        0
+      ]
+    ],
+    "salta": [
+      [
+        3,
+        6
+      ]
+    ],
+    "cae": [
+      [
+        3,
+        7
+      ]
+    ],
+    "aterriza": [
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        10
+      ]
+    ],
+    "trepa": [
+      [
+        3,
+        0,
+        4
+      ]
+    ],
+    "arrastrada": [
+      [
+        4,
+        9
+      ]
+    ],
+    "feliz": [
+      [
+        4,
+        0,
+        5
+      ]
+    ],
+    "extra_regalo": [
+      [
+        4,
+        8
+      ]
+    ],
+    "extra_mano": [
+      [
+        4,
+        6
+      ],
+      [
+        4,
+        7
+      ]
+    ],
+    "extra_saluda": [
+      [
+        4,
+        1
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        4,
+        1
+      ],
+      [
+        4,
+        2
+      ]
+    ],
+    "sombra": [
+      [
+        5,
+        9
+      ]
+    ]
+  },
+  "sin_espejo": [
+    "quieta",
+    "gira",
+    "sentada",
+    "feliz",
+    "despierta",
+    "arrastrada",
+    "salta",
+    "cae",
+    "dormida_inicio",
+    "dormida",
+    "extra_",
+    "sombra"
+  ],
+  "frases": {
+    "saludo": [
+      "Te amo.",
+      "Por fin llegaste...",
+      "Te estaba esperando."
+    ],
+    "saludo_otra": [
+      "Hola, {otra}.",
+      "{otra}... no te acerques mucho a él."
+    ],
+    "aleatorio": [
+      "Te amo.",
+      "Te amo, te amo, te amo.",
+      "No te vayas...",
+      "¿Me recuerdas?",
+      "Quédate conmigo un poco más."
+    ],
+    "comer": [
+      "Gracias... de verdad.",
+      "Es dulce. Como tú."
+    ],
+    "sin_galleta": [
+      "{otra} se la llevó...",
+      "No importa."
+    ],
+    "despierta": [
+      "¿Sigues aquí?",
+      "Soñé contigo."
+    ],
+    "sombra": [
+      "Las sombras me acompañan.",
+      "No tengas miedo..."
+    ],
+    "manos": [
+      "Ven aquí...",
+      "No te escaparás."
+    ],
+    "disparo": [
+      "Ven...",
+      "Te alcanzaré."
+    ],
+    "pelea": [
+      "No me lo quitarás, {otra}.",
+      "Lo siento, {otra}."
+    ],
+    "ataque": [
+      "...",
+      "Ven."
+    ],
+    "golpe": [
+      "...",
+      "Ah."
+    ],
+    "esquiva": [
+      "No.",
+      "Muy lento, {otra}."
+    ],
+    "gana": [
+      "Perdóname, {otra}.",
+      "Ya terminó."
+    ],
+    "pierde": [
+      "...está bien.",
+      "Me ganaste, {otra}."
+    ],
+    "juego": [
+      "Te alcanzaré, {otra}."
+    ],
+    "juego_huye": [
+      "No me atraparás."
+    ],
+    "atrapa": [
+      "Te tengo, {otra}."
+    ],
+    "atrapada": [
+      "Ah... me atrapaste."
+    ],
+    "fin_juego": [
+      "Fue... divertido.",
+      "Otra vez, ¿sí?"
+    ],
+    "mouse_agarra": [
+      "No te vayas.",
+      "Te tengo."
+    ],
+    "mouse_gana": [
+      "Está bien, te lo regreso.",
+      "Toma..."
+    ],
+    "mouse_pierde": [
+      "...",
+      "Tan frío."
+    ],
+    "travesura": [
+      "...yo no fui.",
+      "Ups."
+    ],
+    "te_invitada": [
+      "Gracias... {otra}.",
+      "Es cálido."
+    ],
+    "respuesta_curiosa": [
+      "...",
+      "Solo quiero que alguien se quede."
+    ]
+  },
+  "poder": 8,
+  "relaciones": {
+    "Emilia": {
+      "afinidad": 2,
+      "frases": {
+        "saludo_otra": [
+          "Emilia...",
+          "Te pareces a mí."
+        ],
+        "cariño": [
+          "Cuídate, Emilia."
+        ]
+      }
+    },
+    "Echidna": {
+      "afinidad": -1,
+      "frases": {
+        "molesta": [
+          "Echidna..."
+        ],
+        "pelea": [
+          "Lo siento, Echidna."
+        ]
+      }
+    },
+    "Reinhard": {
+      "afinidad": -1,
+      "frases": {
+        "pelea": [
+          "El Santo de la Espada...",
+          "No me detendrás."
+        ]
+      }
+    },
+    "Rem": {
+      "afinidad": 0
+    },
+    "Beatrice": {
+      "afinidad": 0
+    },
+    "Shaula": {
+      "afinidad": 0
+    }
+  }
+}

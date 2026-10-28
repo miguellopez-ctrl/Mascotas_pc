@@ -1,0 +1,10 @@
+# Generados al usar el programa (cada quien tiene los suyos)
+*.cache
+mascota_ajustes.json
+mascotas.log
+__pycache__/
+*.pyc
+
+# Respaldos y pruebas personales
+Copias/
+Ideas mascotas/

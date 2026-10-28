@@ -1,0 +1,381 @@
+{
+  "personaje": "Echidna",
+  "velocidad": 0.95,
+  "disparo": "elementos",
+  "habilidades": [
+    "te",
+    "lectura",
+    "curiosear"
+  ],
+  "particulas": [
+    "#ffffff",
+    "#e9e4ff",
+    "#b9b0e6",
+    "#6f6599"
+  ],
+  "colores": {
+    "te": [
+      "#ffffff",
+      "#f6f6f6",
+      "#e4e4e4",
+      "#c9c9c9"
+    ],
+    "lectura": [
+      "#ffffff",
+      "#fff8e6",
+      "#f0e2c0",
+      "#c9b48a"
+    ]
+  },
+  "combinar_con_default": false,
+  "animaciones": {
+    "quieta": [
+      [
+        0,
+        0
+      ]
+    ],
+    "mira": [
+      [
+        0,
+        3
+      ]
+    ],
+    "gira": [
+      [
+        0,
+        0
+      ]
+    ],
+    "camina": [
+      [
+        0,
+        4,
+        14
+      ]
+    ],
+    "corre": [
+      [
+        0,
+        4,
+        14
+      ]
+    ],
+    "sentada": [
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "dormida_inicio": [
+      [
+        7,
+        0,
+        3
+      ],
+      [
+        2,
+        0,
+        4
+      ]
+    ],
+    "dormida": [
+      [
+        2,
+        5
+      ],
+      [
+        2,
+        6
+      ]
+    ],
+    "despierta": [
+      [
+        5,
+        0
+      ]
+    ],
+    "salta": [
+      [
+        4,
+        1
+      ]
+    ],
+    "cae": [
+      [
+        4,
+        2
+      ]
+    ],
+    "aterriza": [
+      [
+        4,
+        5
+      ]
+    ],
+    "trepa": [
+      [
+        3,
+        0,
+        4
+      ]
+    ],
+    "arrastrada": [
+      [
+        4,
+        3
+      ]
+    ],
+    "feliz": [
+      [
+        5,
+        0,
+        5
+      ]
+    ],
+    "extra_regalo": [
+      [
+        6,
+        2
+      ]
+    ],
+    "extra_guino": [
+      [
+        6,
+        3
+      ]
+    ],
+    "extra_saluda": [
+      [
+        5,
+        1
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        5,
+        1
+      ],
+      [
+        5,
+        2
+      ]
+    ]
+  },
+  "sin_espejo": [
+    "quieta",
+    "gira",
+    "sentada",
+    "feliz",
+    "despierta",
+    "arrastrada",
+    "salta",
+    "cae",
+    "dormida_inicio",
+    "dormida",
+    "extra_",
+    "sombra"
+  ],
+  "frases": {
+    "saludo": [
+      "Bienvenido a mi pequeña fiesta de té.",
+      "Oh, ¿viniste a verme? Qué interesante.",
+      "Hola. Tengo muchas preguntas para ti."
+    ],
+    "saludo_otra": [
+      "Hola, {otra}. ¿Te puedo hacer unas preguntas?",
+      "{otra}, qué curioso encontrarte aquí."
+    ],
+    "aleatorio": [
+      "El conocimiento es lo único que nunca sacia.",
+      "¿Sabías que tengo curiosidad por todo?",
+      "Me pregunto qué estarás pensando...",
+      "Todo en este mundo merece ser estudiado.",
+      "Qué aburrido sería saberlo todo... bueno, casi todo."
+    ],
+    "comer": [
+      "Mmm, interesante sabor. Lo anotaré.",
+      "Gracias. Va perfecto con el té."
+    ],
+    "sin_galleta": [
+      "Qué rápida eres, {otra}. Fascinante.",
+      "No importa, prefiero observar."
+    ],
+    "despierta": [
+      "Ah... me quedé dormida entre libros.",
+      "¿Ya amaneció? Qué interesante."
+    ],
+    "te": [
+      "¿Gustas una taza de té?",
+      "Hora del té. Siéntate, por favor."
+    ],
+    "te_invitada": [
+      "Gracias por el té, {otra}.",
+      "Mmm... ¿qué le pusiste a esto, {otra}?"
+    ],
+    "lectura": [
+      "Déjame leer un poco más...",
+      "Qué libro tan interesante."
+    ],
+    "curiosidad": [
+      "{otra}, ¿qué se siente ser tú?",
+      "Dime, {otra}, ¿por qué haces lo que haces?",
+      "{otra}, ¿me dejas estudiarte un poquito?"
+    ],
+    "curiosidad_mouse": [
+      "¿Qué estás haciendo? Cuéntamelo todo.",
+      "Ese cursor... ¿a dónde va siempre?"
+    ],
+    "disparo": [
+      "Fuego, agua, viento y tierra.",
+      "Permíteme demostrarte algo."
+    ],
+    "pelea": [
+      "Será un buen experimento, {otra}.",
+      "Veamos de qué estás hecha, {otra}."
+    ],
+    "ataque": [
+      "Interesante.",
+      "¿Y esto?"
+    ],
+    "golpe": [
+      "Oh. Eso fue inesperado.",
+      "Anotado."
+    ],
+    "esquiva": [
+      "Lo vi venir, {otra}.",
+      "Predecible."
+    ],
+    "gana": [
+      "Los datos no mienten, {otra}.",
+      "Gracias por el experimento."
+    ],
+    "pierde": [
+      "Fascinante... perdí.",
+      "Lo estudiaré para la próxima, {otra}."
+    ],
+    "juego": [
+      "Veamos qué tan rápida eres, {otra}."
+    ],
+    "juego_huye": [
+      "Atrápame, si puedes."
+    ],
+    "atrapa": [
+      "Te tengo, {otra}."
+    ],
+    "atrapada": [
+      "Oh. Me atrapaste."
+    ],
+    "fin_juego": [
+      "Qué entretenido.",
+      "Repitámoslo algún día."
+    ],
+    "mouse_agarra": [
+      "Déjame examinar esto.",
+      "Qué objeto tan curioso."
+    ],
+    "mouse_gana": [
+      "Listo, ya lo estudié.",
+      "Toma, ya no lo necesito."
+    ],
+    "mouse_pierde": [
+      "Qué impaciente.",
+      "Bien, bien."
+    ],
+    "travesura": [
+      "Solo quería ver qué pasaba.",
+      "Experimento exitoso."
+    ],
+    "respuesta_curiosa": [
+      "Excelente pregunta. Déjame pensarlo.",
+      "Eso, querida {otra}, es un secreto."
+    ]
+  },
+  "poder": 6,
+  "relaciones": {
+    "Emilia": {
+      "afinidad": -3,
+      "frases": {
+        "molesta": [
+          "Emilia... qué desagradable sorpresa.",
+          "No soporto verte, Emilia."
+        ],
+        "pelea": [
+          "Esto lo disfrutaré, Emilia.",
+          "Por fin, Emilia."
+        ],
+        "saludo_otra": [
+          "Emilia. Qué molestia."
+        ],
+        "rechaza_te": [
+          "Nunca tomaría té contigo, Emilia."
+        ],
+        "gana": [
+          "Era evidente, Emilia."
+        ]
+      }
+    },
+    "Satella": {
+      "afinidad": -3,
+      "frases": {
+        "molesta": [
+          "La bruja de la envidia... aléjate.",
+          "Tú nos quitaste todo, Satella."
+        ],
+        "pelea": [
+          "No te perdonaré, Satella."
+        ],
+        "rechaza_te": [
+          "No compartiré mi mesa contigo."
+        ]
+      }
+    },
+    "Beatrice": {
+      "afinidad": 2,
+      "frases": {
+        "saludo_otra": [
+          "Mi querida Beatrice.",
+          "Beatrice, ¿sigues leyendo?"
+        ],
+        "cariño": [
+          "Beatrice, qué bien te ves."
+        ]
+      }
+    },
+    "Reinhard": {
+      "afinidad": 2,
+      "frases": {
+        "saludo_otra": [
+          "El Santo de la Espada... déjame estudiarte.",
+          "Reinhard, ¿cuántas bendiciones tienes?"
+        ],
+        "curiosidad": [
+          "Reinhard, ¿qué se siente ser invencible?"
+        ],
+        "pelea": [
+          "Un experimento contra el más fuerte. Fascinante."
+        ]
+      }
+    },
+    "Rem": {
+      "afinidad": 0
+    },
+    "Shaula": {
+      "afinidad": 0
+    }
+  }
+}

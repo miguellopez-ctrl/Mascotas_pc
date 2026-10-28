@@ -1,0 +1,194 @@
+{
+  "personaje": "Emilia",
+  "velocidad": 1.0,
+  "habilidades": [
+    "nieve",
+    "cristales",
+    "congelar"
+  ],
+  "particulas": [
+    "#ffffff",
+    "#e3f6ff",
+    "#a9dcff",
+    "#6fa8d6"
+  ],
+  "colores": {
+    "cristales": [
+      "#ffffff",
+      "#dff4ff",
+      "#9fd6ff",
+      "#5f9bd0"
+    ],
+    "nieve": [
+      "#ffffff",
+      "#f1faff",
+      "#d3ecff",
+      "#a9cbe6"
+    ]
+  },
+  "frases": {
+    "saludo": [
+      "¡Hola! ¿Cómo estás?",
+      "¡Qué gusto verte!",
+      "¡Hoy me esforzaré mucho!"
+    ],
+    "saludo_otra": [
+      "¡Hola, {otra}!",
+      "{otra}, ¿quieres jugar?",
+      "¡Qué bonito día, {otra}!"
+    ],
+    "aleatorio": [
+      "¿Hace frío o soy yo?",
+      "¡Hoy me esforzaré muchísimo!",
+      "Mmm... ¿qué hago ahora?",
+      "¡No te desveles mucho!",
+      "Me gusta estar contigo."
+    ],
+    "comer": [
+      "¡Muchas gracias!",
+      "¡Está riquísima!",
+      "¡Mmm, qué rica!"
+    ],
+    "sin_galleta": [
+      "¡Ay, {otra} ganó!",
+      "Bueno, la próxima será mía."
+    ],
+    "despierta": [
+      "Mmm... cinco minutitos más.",
+      "¡Buenos días!"
+    ],
+    "nieve": [
+      "¡Mira, nieve!",
+      "Un poquito de frío no hace daño."
+    ],
+    "cristales": [
+      "¡Allá va!",
+      "¡Hielo!"
+    ],
+    "congelar": [
+      "¡Congelado!",
+      "Perdón, perdón, ¡ya lo suelto!"
+    ],
+    "pelea": [
+      "¡No me lo pondré fácil, {otra}!",
+      "Lo siento, {otra}, voy en serio."
+    ],
+    "ataque": [
+      "¡Ya!",
+      "¡Ahí va!"
+    ],
+    "golpe": [
+      "¡Ay!",
+      "¡Eso dolió!"
+    ],
+    "gana": [
+      "¡Lo logré! ¿Estás bien, {otra}?",
+      "¡Gané!"
+    ],
+    "pierde": [
+      "Ay... me ganaste, {otra}.",
+      "¡La próxima vez!"
+    ],
+    "juego": [
+      "¡Te voy a alcanzar, {otra}!"
+    ],
+    "juego_huye": [
+      "¡Atrápame si puedes!"
+    ],
+    "atrapa": [
+      "¡Te atrapé, {otra}!"
+    ],
+    "atrapada": [
+      "¡Ay, me atrapaste!"
+    ],
+    "fin_juego": [
+      "¡Qué divertido!",
+      "¡Otra vez, otra vez!"
+    ],
+    "mouse_agarra": [
+      "¡Lo atrapé!",
+      "Uy, ¿es tuyo?"
+    ],
+    "mouse_gana": [
+      "Toma, perdón.",
+      "¡Gané! Ya te lo doy."
+    ],
+    "mouse_pierde": [
+      "¡Ay, qué fuerte!",
+      "Bueno, bueno."
+    ],
+    "travesura": [
+      "¡Ups! Fue sin querer.",
+      "Así se ve más bonito, ¿no?"
+    ],
+    "disparo": [
+      "¡Carámbanos!",
+      "¡Perdón, perdón!",
+      "¡Allá van!"
+    ],
+    "esquiva": [
+      "¡Uy, casi!",
+      "¡No me diste!"
+    ],
+    "te_invitada": [
+      "¡Muchas gracias, {otra}!",
+      "¡Qué rico huele!"
+    ],
+    "respuesta_curiosa": [
+      "Mmm... no sé, ¿tú qué crees?",
+      "¡Qué pregunta tan difícil!"
+    ]
+  },
+  "disparo": "hielo",
+  "poder": 3,
+  "relaciones": {
+    "Beatrice": {
+      "afinidad": 3,
+      "frases": {
+        "saludo_otra": [
+          "¡Beako! ¿Jugamos?",
+          "¡Beatrice, ven!"
+        ],
+        "cariño": [
+          "¡Beako se ve muy linda hoy!"
+        ]
+      }
+    },
+    "Rem": {
+      "afinidad": 2
+    },
+    "Reinhard": {
+      "afinidad": 2,
+      "frases": {
+        "pelea": [
+          "¿Contra Reinhard? ¡Ay, no!",
+          "Haré mi mejor esfuerzo, Reinhard."
+        ]
+      }
+    },
+    "Echidna": {
+      "afinidad": -1,
+      "frases": {
+        "saludo_otra": [
+          "Ah... hola, Echidna.",
+          "Echidna, ¿qué quieres?"
+        ],
+        "molesta": [
+          "Echidna, no me mires así."
+        ]
+      }
+    },
+    "Satella": {
+      "afinidad": -1,
+      "frases": {
+        "saludo_otra": [
+          "¿Por qué te pareces tanto a mí?",
+          "Satella... me das un poco de miedo."
+        ]
+      }
+    },
+    "Shaula": {
+      "afinidad": 1
+    }
+  }
+}

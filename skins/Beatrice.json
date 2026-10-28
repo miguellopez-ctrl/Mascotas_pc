@@ -1,0 +1,188 @@
+{
+  "personaje": "Beatrice",
+  "vuela": true,
+  "velocidad": 0.95,
+  "habilidades": [
+    "teletransporte",
+    "cristales"
+  ],
+  "particulas": [
+    "#e2c6ff",
+    "#c08bff",
+    "#a064ff",
+    "#7a3fe0"
+  ],
+  "colores": {
+    "cristales": [
+      "#f3e6ff",
+      "#c592ff",
+      "#9b5cff",
+      "#6a2fd0"
+    ],
+    "teletransporte": [
+      "#ffffff",
+      "#d9b8ff",
+      "#a768ff",
+      "#6d34c9"
+    ]
+  },
+  "frases": {
+    "saludo": [
+      "¿Qué quieres, supongo?",
+      "Betty está ocupada, de hecho.",
+      "Hmph. Hola, supongo."
+    ],
+    "saludo_otra": [
+      "Ah, eres tú, {otra}, supongo.",
+      "{otra}, no molestes a Betty.",
+      "Hmph, hola, {otra}."
+    ],
+    "aleatorio": [
+      "Betty quiere leer en paz, supongo.",
+      "No es que me importe, de hecho.",
+      "¿Por qué me miras tanto?",
+      "Betty es una gran espíritu, supongo.",
+      "Qué aburrido, de hecho."
+    ],
+    "comer": [
+      "No está mal, supongo.",
+      "Betty acepta este tributo.",
+      "Hmph... estaba rica, de hecho."
+    ],
+    "sin_galleta": [
+      "¡Era de Betty, {otra}!",
+      "Hmph, ni la quería, supongo."
+    ],
+    "despierta": [
+      "¿Quién despertó a Betty?",
+      "Cinco minutos más, supongo..."
+    ],
+    "teletransporte": [
+      "Por esta puerta, supongo.",
+      "Betty se va por la puerta, de hecho."
+    ],
+    "cristales": [
+      "¡Toma esto, supongo!",
+      "¡Minya!"
+    ],
+    "pelea": [
+      "Te arrepentirás, {otra}, supongo.",
+      "Betty no se va a contener, de hecho."
+    ],
+    "ataque": [
+      "¡Hmph!",
+      "¡Ahí va, supongo!"
+    ],
+    "golpe": [
+      "¡Oye!",
+      "¡Eso no se le hace a Betty!"
+    ],
+    "gana": [
+      "Era obvio, supongo.",
+      "Demasiado fácil, {otra}, de hecho."
+    ],
+    "pierde": [
+      "¡E-eso no cuenta, supongo!",
+      "¡Hmph! Betty se dejó ganar."
+    ],
+    "juego": [
+      "Betty te atrapará, {otra}, supongo."
+    ],
+    "juego_huye": [
+      "¡No me alcanzas, de hecho!"
+    ],
+    "atrapa": [
+      "¡Te tengo, {otra}, supongo!"
+    ],
+    "atrapada": [
+      "¡No vale, de hecho!"
+    ],
+    "fin_juego": [
+      "Bueno, fue algo divertido, supongo.",
+      "Betty se cansó, de hecho."
+    ],
+    "mouse_agarra": [
+      "Esto ahora es de Betty, supongo.",
+      "¡Mío, de hecho!"
+    ],
+    "mouse_gana": [
+      "Ya, tómalo, supongo.",
+      "Betty ganó, de hecho."
+    ],
+    "mouse_pierde": [
+      "¡Hmph!",
+      "¡No es justo, supongo!"
+    ],
+    "travesura": [
+      "Betty no fue, supongo.",
+      "Hmph, se veía mal ahí."
+    ],
+    "disparo": [
+      "¡Minya, supongo!",
+      "Toma esto, de hecho."
+    ],
+    "esquiva": [
+      "¿Eso era todo, supongo?",
+      "Betty es más rápida, de hecho."
+    ],
+    "te_invitada": [
+      "Betty acepta, pero solo un poco, supongo.",
+      "Que no esté muy caliente, {otra}, de hecho."
+    ],
+    "respuesta_curiosa": [
+      "¡Eso no te importa, supongo!",
+      "Hmph, pregúntale a otra, de hecho."
+    ]
+  },
+  "disparo": "cristal",
+  "poder": 3,
+  "relaciones": {
+    "Echidna": {
+      "afinidad": 1,
+      "frases": {
+        "saludo_otra": [
+          "...Madre, supongo.",
+          "Echidna. Betty sigue esperando, de hecho."
+        ],
+        "cariño": [
+          "Betty no te ha perdonado... del todo, supongo."
+        ],
+        "pelea": [
+          "¡Betty ya no es tu muñeca, de hecho!"
+        ]
+      }
+    },
+    "Emilia": {
+      "afinidad": 2,
+      "frases": {
+        "cariño": [
+          "Emilia, no te desveles, supongo."
+        ]
+      }
+    },
+    "Rem": {
+      "afinidad": 1
+    },
+    "Satella": {
+      "afinidad": -2,
+      "frases": {
+        "molesta": [
+          "Aléjate de Betty, bruja, supongo.",
+          "Ese aire... no me gusta, de hecho."
+        ]
+      }
+    },
+    "Reinhard": {
+      "afinidad": 0,
+      "frases": {
+        "pelea": [
+          "Ni con todo Betty podrá con él... supongo.",
+          "¡Hmph! No le tengo miedo, de hecho."
+        ]
+      }
+    },
+    "Shaula": {
+      "afinidad": 0
+    }
+  }
+}
