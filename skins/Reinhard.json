@@ -1,14 +1,15 @@
 {
   "personaje": "Reinhard",
   "poder": 10,
-  "velocidad": 1.6,
+  "velocidad": 1.3,
   "pacificador": true,
   "disparo": "corte",
   "habilidades": [
     "bendicion",
     "minimizar",
     "golpe_mouse",
-    "super_salto"
+    "super_salto",
+    "espada_seria"
   ],
   "particulas": [
     "#fffbe6",
@@ -330,6 +331,41 @@
     "cariño": [
       "Me alegra verte bien, {otra}.",
       "{otra}, ¿necesitas algo?"
+    ],
+    "caricia": [
+      "Gracias. Es un honor.",
+      "Me alegra verte bien."
+    ],
+    "caricia_alta": [
+      "Puedes contar conmigo siempre.",
+      "Eres un amigo muy valioso."
+    ],
+    "protege": [
+      "No dejaré que la lastimes.",
+      "Detente."
+    ],
+    "atrapa_vuelo": [
+      "¡Te tengo!",
+      "Tranquila, ya estás a salvo."
+    ],
+    "espada_seria": [
+      "Esta vez... desenvainaré la espada.",
+      "Esto va en serio."
+    ],
+    "ko": [
+      "...imposible."
+    ],
+    "buenos_dias": [
+      "Buenos días. Que tengas un día bendecido."
+    ],
+    "buenas_noches": [
+      "Descansa. Yo vigilo."
+    ],
+    "gracias_cura": [
+      "Gracias, {otra}."
+    ],
+    "plato_recibe": [
+      "Gracias, {otra}. Está delicioso."
     ]
   },
   "relaciones": {
@@ -377,6 +413,18 @@
           "Shaula, tienes mucha energía hoy."
         ]
       }
+    },
+    "Subaru": {
+      "afinidad": 2,
+      "frases": {
+        "cariño": [
+          "Subaru, amigo mío.",
+          "Es bueno verte, Subaru."
+        ]
+      }
     }
-  }
+  },
+  "altura_cm": 183,
+  "protector": true,
+  "pose_disparo": "extra_espada"
 }

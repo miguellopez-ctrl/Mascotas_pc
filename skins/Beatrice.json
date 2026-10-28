@@ -4,7 +4,8 @@
   "velocidad": 0.95,
   "habilidades": [
     "teletransporte",
-    "cristales"
+    "cristales",
+    "siesta_lectura"
   ],
   "particulas": [
     "#e2c6ff",
@@ -132,6 +133,37 @@
     "respuesta_curiosa": [
       "¡Eso no te importa, supongo!",
       "Hmph, pregúntale a otra, de hecho."
+    ],
+    "caricia": [
+      "¡N-no me toques, de hecho!",
+      "Hmph. Betty lo permite... solo hoy, supongo."
+    ],
+    "caricia_alta": [
+      "N-no es que me guste... bueno, sí, supongo.",
+      "Puedes seguir. Betty lo permite."
+    ],
+    "siesta": [
+      "Betty va a leer un rato, supongo.",
+      "No molesten a Betty, de hecho."
+    ],
+    "leyendo_enojada": [
+      "¡Betty estaba leyendo, supongo!",
+      "¡¿Qué quieres?! ¡Ve a molestar a otro, de hecho!"
+    ],
+    "ko": [
+      "Betty... solo... descansa, supongo..."
+    ],
+    "buenos_dias": [
+      "Hmph. Buenos días, supongo."
+    ],
+    "buenas_noches": [
+      "Ya es tarde. Hasta Betty se va a dormir, de hecho."
+    ],
+    "gracias_cura": [
+      "N-no tenías que hacerlo, {otra}... gracias, supongo."
+    ],
+    "plato_recibe": [
+      "Hmph... está rico, supongo."
     ]
   },
   "disparo": "cristal",
@@ -183,6 +215,28 @@
     },
     "Shaula": {
       "afinidad": 0
+    },
+    "Subaru": {
+      "afinidad": 3,
+      "frases": {
+        "cariño": [
+          "Subaru... Betty no te estaba esperando, de hecho.",
+          "Hmph. Subaru es el compañero de Betty, supongo."
+        ],
+        "pelea": [
+          "¡Subaru! ¡Betty te dará una lección, supongo!"
+        ]
+      }
     }
+  },
+  "altura_cm": 140,
+  "puertas": true,
+  "animaciones": {
+    "despierta": [
+      [
+        6,
+        0
+      ]
+    ]
   }
 }

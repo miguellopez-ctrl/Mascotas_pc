@@ -5,7 +5,8 @@
   "habilidades": [
     "te",
     "lectura",
-    "curiosear"
+    "curiosear",
+    "trivia"
   ],
   "particulas": [
     "#ffffff",
@@ -303,6 +304,37 @@
     "respuesta_curiosa": [
       "Excelente pregunta. Déjame pensarlo.",
       "Eso, querida {otra}, es un secreto."
+    ],
+    "caricia": [
+      "Qué curioso... ¿por qué lo haces?",
+      "Hmm, no me desagrada."
+    ],
+    "caricia_alta": [
+      "Quiero saberlo todo de ti.",
+      "Eres mi tema de estudio favorito."
+    ],
+    "te_mesa": [
+      "Pasen, la mesa está lista.",
+      "Bienvenidos a mi fiesta de té."
+    ],
+    "trivia": [
+      "Una pregunta para ti: {p}",
+      "A ver si sabes esta: {p}"
+    ],
+    "ko": [
+      "Interesante... así se siente perder..."
+    ],
+    "buenos_dias": [
+      "Buenos días. ¿Qué aprenderemos hoy?"
+    ],
+    "buenas_noches": [
+      "La noche es ideal para leer."
+    ],
+    "gracias_cura": [
+      "Gracias, {otra}. Qué amable."
+    ],
+    "plato_recibe": [
+      "Delicioso. Gracias, {otra}."
     ]
   },
   "poder": 6,
@@ -376,6 +408,16 @@
     },
     "Shaula": {
       "afinidad": 0
+    },
+    "Subaru": {
+      "afinidad": 2,
+      "frases": {
+        "cariño": [
+          "Subaru-kun, ¿un poco de té?",
+          "Tu mente es fascinante, Subaru-kun."
+        ]
+      }
     }
-  }
+  },
+  "altura_cm": 162
 }

@@ -29,6 +29,10 @@ Comportamientos:
       y se echan peleas amistosas.
     - Cada personaje tiene su personalidad (frases) y habilidades propias en el .json
       de su skin: nieve, cristales, rayo, teletransporte, aura, súper salto...
+    - Estatura proporcional al anime ("altura_cm"); el tamaño cambia a todas juntas.
+    - Vida (corazones) y desmayos en las peleas, curación, torneo, escondidas,
+      cariño contigo, día y noche, logros, sonidos opcionales.
+    - Ctrl + Alt + M esconde / muestra todas; se esconden solas en pantalla completa.
 
 Skins (hojas de sprites): pon pet.png junto al script y/o más imágenes en la
 carpeta "skins". Se cambian desde el menú (clic derecho -> Skin). Aceptan
@@ -83,6 +87,7 @@ ACTIONS = {
     "disparar": 8,             # dispara su ataque (a otra mascota, al mouse o a una ventana)
     "habilidad": 12,           # habilidad especial del personaje (ver su .json)
     "hablar": 4,               # dice algo de su personalidad
+    "esconderse": 0.5,         # te reta a jugar a las escondidas (búscala con un clic)
 }
 
 # Habilidades que puede tener cada skin en su .json ("habilidades": [...]):
@@ -103,9 +108,30 @@ ACTIONS = {
 #   bendicion    aura dorada de protección divina: más rápido por un rato
 #   minimizar    corte de espada a una ventana y la minimiza   (poder pesado)
 #   golpe_mouse  le pega al cursor y lo manda volando          (poder pesado)
+#   cocinar      cocina y le lleva un plato a quien más quiere (o a ti)
+#   curar        cura con agua/hielo a quien quedó lastimada o desmayada en una pelea
+#   oni          modo oni: cuerno, aura y más fuerza (se activa sola si su enemiga se acerca)
+#   siesta_lectura  se sube a una ventana a leer; si la despiertas se enoja
+#   congelar_ventana  le llena de escarcha y carámbanos el borde a una ventana (se derrite)
+#   nevada       nieve en toda la pantalla un ratito
+#   escorpion    se transforma en escorpión y camina así un rato
+#   maestro      sigue a su "maestro" (Subaru, o a quien más acaricias)
+#   trivia       te hace una pregunta curiosa y luego te dice la respuesta
+#   oscuridad    oscurece la pantalla y susurra "te amo..."
+#   espada_seria desenvaina en serio: corte gigante con destello
+#   shamak       nube de oscuridad: la otra no ve nada y camina perdida
+#   mano_invisible  mano invisible que jala a otra o se lleva el mouse
+#   presume      "¡Mi nombre es Natsuki Subaru!"
+# Pasivas (no se eligen al azar, pasan solas): regreso (Subaru vuelve al desmayarse),
+# celos (Satella), proteger (Reinhard desvía disparos y atrapa a quien sale volando),
+# puertas (Beatrice dibuja puertas al teletransportarse).
 ABILITY_NAMES = {"limpiar", "aura", "nieve", "cristales", "teletransporte", "rayo",
                  "super_salto", "lucero", "te", "lectura", "curiosear", "sombra", "manos",
-                 "bendicion", "minimizar", "golpe_mouse"}
+                 "bendicion", "minimizar", "golpe_mouse", "cocinar", "curar", "oni",
+                 "siesta_lectura", "congelar_ventana", "nevada", "escorpion", "maestro",
+                 "trivia", "oscuridad", "espada_seria", "shamak", "mano_invisible", "presume"}
+PASSIVE_NAMES = {"regreso": "Regreso por muerte", "celos": "Celos", "proteger": "Proteger",
+                 "puertas": "Puertas al teletransportarse"}
 HEAVY_ABILITIES = {"minimizar", "golpe_mouse"}
 ELEMENT_COLORS = [["#fff3c4", "#ff9a3c", "#ff5a1f", "#b32400"],    # fuego
                   ["#e8f7ff", "#6ec6ff", "#2f8fe0", "#1a4f8f"],    # agua
@@ -132,9 +158,55 @@ ENEMY_NEAR = 260           # a esta distancia una enemiga la "molesta"
 POWER_FLAG_DEFAULT = True  # poderes pesados (minimizar ventanas, lanzar el mouse...)
 SKIN_ALIASES = {"pet": "Rem"}   # nombres viejos de skins -> nombre nuevo
 FX_RATES = {"aura": 30, "burbujas": 14, "nieve": 18, "estela": 40, "hielo_cursor": 30,
-            "sombra": 34, "vapor": 7, "paginas": 5}
+            "sombra": 34, "vapor": 7, "paginas": 5, "shamak": 40}
 FIGHT_SECONDS_MAX = 25     # duración máxima de una pelea entre mascotas
 TAG_SECONDS = 30           # duración máxima de un juego de las atrapadas
+
+# ---------- Estatura (proporcional al anime) ----------
+# Cada skin dice cuánto mide en su .json ("altura_cm"). El tamaño que eliges en el
+# menú es cuántos píxeles mide alguien de 160 cm; todas se escalan en proporción,
+# así Beatrice siempre se ve más bajita que Emilia y Reinhard el más alto.
+DEFAULT_HEIGHT_CM = 160
+SIZE_OPTIONS = [("Mini", 55), ("Muy chico", 70), ("Chico", 85), ("Mediano", 100),
+                ("Normal", 120), ("Grande", 145), ("Muy grande", 175), ("Enorme", 215)]
+DEFAULT_SIZE_PX = 85
+
+# ---------- Vida, cariño y juegos ----------
+HP_MAX = 5                 # corazones de vida en las peleas
+KO_SECONDS = (6, 9)        # cuánto se queda desmayada si nadie la cura
+HP_REGEN = 0.06            # corazones por segundo que recupera sola fuera de pelea
+HEAL_RANGE = 1500          # distancia a la que Rem o Emilia van a curar
+CARINO_MAX = 100           # cariño máximo de cada personaje contigo
+HIDE_SECONDS = 60          # escondidas: tiempo para encontrarla
+PANIC_KEYS = (0x11, 0x12, 0x4D)   # Ctrl + Alt + M: esconder / mostrar todas
+NIGHT_START, NIGHT_END = 23, 6    # de noche duermen más
+SOUNDS_DIR = os.path.join(BASE_DIR, "sonidos")
+SYSTEM_SOUNDS = {"logro": "SystemAsterisk", "ko": "SystemHand", "torneo": "SystemExclamation",
+                 "regreso": "SystemHand", "encontrada": "SystemAsterisk"}
+TRIVIA = [
+    ("¿Cuál es el planeta más grande del sistema solar?", "Júpiter."),
+    ("¿Cuántos corazones tiene un pulpo?", "Tres."),
+    ("¿Qué animal duerme de pie?", "El caballo (y muchos pájaros)."),
+    ("¿Cuál es el hueso más largo del cuerpo humano?", "El fémur."),
+    ("¿En qué año llegó el ser humano a la Luna?", "En 1969."),
+    ("¿Cuál es el único mamífero que puede volar?", "El murciélago."),
+    ("¿Qué gas respiran las plantas para hacer la fotosíntesis?", "El dióxido de carbono."),
+    ("¿Cuántas patas tiene una araña?", "Ocho."),
+    ("¿Cuál es el océano más grande?", "El Pacífico."),
+    ("¿Qué metal es líquido a temperatura ambiente?", "El mercurio."),
+    ("¿Cuál es el río más largo de América?", "El Amazonas."),
+    ("¿Cuántos minutos tiene un día?", "1440."),
+    ("¿Quién pintó la Mona Lisa?", "Leonardo da Vinci."),
+    ("¿Qué científico propuso la teoría de la relatividad?", "Albert Einstein."),
+    ("¿Cuál es el animal terrestre más rápido?", "El guepardo."),
+    ("¿Cuántos lados tiene un hexágono?", "Seis."),
+    ("¿Cuál es la capital de Japón?", "Tokio."),
+    ("¿Qué órgano consume cerca del 20% de la energía del cuerpo?", "El cerebro."),
+    ("¿Cuál es el elemento más abundante del universo?", "El hidrógeno."),
+    ("¿Qué lenguaje de programación usa este programa?", "Python, claro."),
+    ("¿Cuántos bits tiene un byte?", "Ocho."),
+    ("¿Qué estudia la entomología?", "Los insectos."),
+]
 
 # ---------- Volar (solo skins con "vuela": true en su .json) ----------
 FLY_SPEED = 230            # px por segundo
@@ -230,7 +302,7 @@ SKIP_CLASSES = {"Shell_TrayWnd", "Shell_SecondaryTrayWnd", "Progman", "WorkerW",
                 "Windows.UI.Core.CoreWindow", "ApplicationFrameWindow_Hidden"}
 SETTINGS_FILE = os.path.join(BASE_DIR, "mascota_ajustes.json")
 SKINS_DIR = os.path.join(BASE_DIR, "skins")
-CACHE_VERSION = 4
+CACHE_VERSION = 5
 
 
 
@@ -423,6 +495,83 @@ def cursor_pos():
     return p.x, p.y
 
 
+def left_down():
+    return bool(user32.GetAsyncKeyState(0x01) & 0x8000)
+
+
+def keys_down(keys):
+    """True si todas esas teclas están presionadas (p. ej. Ctrl + Alt + M)."""
+    try:
+        return all(user32.GetAsyncKeyState(k) & 0x8000 for k in keys)
+    except Exception:
+        return False
+
+
+def monitor_rects():
+    """Rectángulo completo (con barra de tareas) de cada monitor."""
+    mons = []
+
+    def callback(hmon, hdc, lprect, lparam):
+        mi = MONITORINFO()
+        mi.cbSize = ctypes.sizeof(MONITORINFO)
+        if user32.GetMonitorInfoW(hmon, ctypes.byref(mi)):
+            w = mi.rcMonitor
+            mons.append((w.left, w.top, w.right, w.bottom))
+        return True
+
+    try:
+        user32.EnumDisplayMonitors(None, None, MONITORENUMPROC(callback), 0)
+    except Exception:
+        pass
+    return mons
+
+
+def fullscreen_app():
+    """True si la ventana activa ocupa un monitor completo (juego, video, presentación)."""
+    try:
+        fg = user32.GetForegroundWindow()
+        if not fg or not user32.IsWindowVisible(fg):
+            return False
+        pid = wintypes.DWORD()
+        user32.GetWindowThreadProcessId(fg, ctypes.byref(pid))
+        if pid.value == os.getpid():
+            return False
+        buf = ctypes.create_unicode_buffer(256)
+        user32.GetClassNameW(fg, buf, 256)
+        if buf.value in SKIP_CLASSES:
+            return False
+        r = RECT()
+        user32.GetWindowRect(fg, ctypes.byref(r))
+        for l, t, rr, b in monitor_rects():
+            if r.left <= l and r.top <= t and r.right >= rr and r.bottom >= b:
+                return True
+    except Exception:
+        pass
+    return False
+
+
+try:
+    import winsound
+except Exception:                      # fuera de Windows
+    winsound = None
+
+
+def play_sound(event):
+    """Sonido de un evento: sonidos/<evento>.wav si existe; si no, uno de Windows."""
+    if winsound is None:
+        return
+    path = os.path.join(SOUNDS_DIR, event + ".wav")
+    try:
+        if os.path.exists(path):
+            winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC |
+                               winsound.SND_NODEFAULT)
+        elif event in SYSTEM_SOUNDS:
+            winsound.PlaySound(SYSTEM_SOUNDS[event], winsound.SND_ALIAS | winsound.SND_ASYNC |
+                               winsound.SND_NODEFAULT)
+    except Exception:
+        pass
+
+
 # ---------- Hoja de sprites ----------
 def read_sheet(path):
     """Lee la imagen y devuelve (imagen_tk, matriz de colores '#rrggbb' o None)."""
@@ -555,6 +704,92 @@ def flat_mask(pixels, tol):
     return [bytearray(1 if solid_color(c) else 0 for c in row) for row in pixels]
 
 
+def fill_holes(mask, pixels, tol):
+    """Fondo liso: lo que se parece al fondo pero está encerrado dentro de una figura
+    (camisa blanca, piel, brillos) es parte de la figura, no fondo. Solo los huecos que
+    son del mismo color del fondo (o de sus cuadritos, si es un "transparente falso")
+    se quedan como fondo."""
+    h, w = len(mask), len(mask[0])
+
+    def rgb(c):
+        return int(c[1:3], 16), int(c[3:5], 16), int(c[5:7], 16)
+
+    # tonos del fondo (uno, o dos si son cuadritos gris/blanco)
+    border = pixels[0] + pixels[-1] + [r[0] for r in pixels] + [r[-1] for r in pixels]
+    hist = {}
+    for c in border:
+        if c is None:
+            continue
+        r, g, b = rgb(c)
+        if max(r, g, b) - min(r, g, b) <= 8:
+            k = (r + g + b) // 3
+            hist[k] = hist.get(k, 0) + 1
+    tones = []
+    total = float(sum(hist.values()) or 1)
+    for k, n in sorted(hist.items(), key=lambda kv: -kv[1]):
+        if all(abs(k - t) >= 6 for t in tones) and n >= total * 0.04:
+            tones.append(k)
+        if len(tones) == 2:
+            break
+    if not tones:
+        b0 = rgb(pixels[0][0])
+        tones = [sum(b0) // 3]
+    # a los tonos les sumamos sus vecinos cercanos (ruido de compresión)
+    groups = []
+    for t in tones:
+        n = sum(hist.get(k, 0) for k in range(t - 4, t + 5))
+        groups.append((t, n))
+
+    def is_bg_pixel(c):
+        r, g, b = rgb(c)
+        if max(r, g, b) - min(r, g, b) > 8:
+            return False
+        v = (r + g + b) // 3
+        return any(abs(v - t) <= 4 for t in tones)
+
+    outside = [bytearray(w) for _ in range(h)]
+    stack = [(x, y) for x in range(w) for y in (0, h - 1)] + \
+            [(x, y) for y in range(h) for x in (0, w - 1)]
+    while stack:
+        x, y = stack.pop()
+        if outside[y][x] or mask[y][x]:
+            continue
+        outside[y][x] = 1
+        if x > 0: stack.append((x - 1, y))
+        if x < w - 1: stack.append((x + 1, y))
+        if y > 0: stack.append((x, y - 1))
+        if y < h - 1: stack.append((x, y + 1))
+    seen = [bytearray(w) for _ in range(h)]
+    for y in range(h):
+        for x in range(w):
+            if mask[y][x] or outside[y][x] or seen[y][x]:
+                continue
+            comp = []
+            stack = [(x, y)]
+            seen[y][x] = 1
+            while stack:
+                cx, cy = stack.pop()
+                comp.append((cx, cy))
+                for nx, ny in ((cx - 1, cy), (cx + 1, cy), (cx, cy - 1), (cx, cy + 1)):
+                    if 0 <= nx < w and 0 <= ny < h and not mask[ny][nx] and \
+                            not outside[ny][nx] and not seen[ny][nx]:
+                        seen[ny][nx] = 1
+                        stack.append((nx, ny))
+            like = sum(1 for cx, cy in comp if is_bg_pixel(pixels[cy][cx]))
+            if like < len(comp) * 0.85:              # no es un hueco de fondo: es figura
+                for cx, cy in comp:
+                    mask[cy][cx] = 1
+    # además: zonas claras pegadas al fondo pero que no son del tono del fondo
+    # (camisa blanca que toca el borde de la figura) se recuperan si están rodeadas
+    # de figura en casi todos lados
+    for y in range(1, h - 1):
+        row, up, dn, prow = mask[y], mask[y - 1], mask[y + 1], pixels[y]
+        for x in range(1, w - 1):
+            if not row[x] and outside[y][x] and not is_bg_pixel(prow[x]):
+                if (row[x - 1] + row[x + 1] + up[x] + dn[x]) >= 3:
+                    row[x] = 1
+
+
 def typical_height(boxes):
     """Altura "de referencia" de una pose. No usa la figura más alta (un retrato
     grande en la hoja lo arruinaría) sino la mediana de las piezas grandes."""
@@ -572,6 +807,8 @@ def detect_poses(pixels, tol, gap=4, min_part=4):
     h, w = len(pixels), len(pixels[0])
     if background_mode(pixels, tol) == "plano":
         mask = flat_mask(pixels, tol)
+        if pixels[0][0] is not None:                 # fondo de color (sin transparencia)
+            fill_holes(mask, pixels, tol)
     else:
         mask = flood_background(pixels, SHEET_STEP)
 
@@ -936,7 +1173,9 @@ def resolve_poses(spec, rows):
             for fi, row in enumerate(rows):
                 for pi, b in enumerate(row):
                     inside = b[0] <= px_ <= b[2] and b[1] <= py_ <= b[3]
-                    d = 0 if inside else math.hypot((b[0] + b[2]) / 2 - px_, (b[1] + b[3]) / 2 - py_)
+                    # dentro de varias (un recuadro grande que encierra otras): la más chica
+                    d = -1.0 / max(1, (b[2] - b[0]) * (b[3] - b[1])) if inside else \
+                        math.hypot((b[0] + b[2]) / 2 - px_, (b[1] + b[3]) / 2 - py_)
                     if best is None or d < best[0]:
                         best = (d, fi, pi)
             if best:
@@ -978,6 +1217,115 @@ def show_sheet(path=None):
     root.mainloop()
 
 
+def crop_box(mask, x0, y0, x1, y1):
+    """La figura principal dentro de un rectángulo de la imagen (la pieza más grande y lo
+    que la toca), para recortes manuales ["#", x0, y0, x1, y1] en el .json."""
+    h, w = len(mask), len(mask[0])
+    x0, x1 = max(0, min(x0, x1)), min(w - 1, max(x0, x1))
+    y0, y1 = max(0, min(y0, y1)), min(h - 1, max(y0, y1))
+    seen = set()
+    comps = []
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            if not mask[y][x] or (x, y) in seen:
+                continue
+            seen.add((x, y))
+            stack = [(x, y)]
+            b = [x, y, x, y]
+            n = 0
+            while stack:
+                cx, cy = stack.pop()
+                n += 1
+                b = [min(b[0], cx), min(b[1], cy), max(b[2], cx), max(b[3], cy)]
+                for ny in (cy - 1, cy, cy + 1):
+                    for nx in (cx - 1, cx, cx + 1):
+                        if x0 <= nx <= x1 and y0 <= ny <= y1 and mask[ny][nx] \
+                                and (nx, ny) not in seen:
+                            seen.add((nx, ny))
+                            stack.append((nx, ny))
+            comps.append((n, b))
+    if not comps:
+        return None
+    comps.sort(key=lambda c: -c[0])
+    box = list(comps[0][1])
+    mx = (box[2] - box[0]) * 0.1
+    for n, b in comps[1:]:
+        if n >= 6 and b[0] <= box[2] + mx and b[2] >= box[0] - mx and \
+                b[1] <= box[3] and b[3] >= box[1] - (box[3] - box[1]) * 0.3:
+            box = [min(box[0], b[0]), min(box[1], b[1]), max(box[2], b[2]), max(box[3], b[3])]
+    return tuple(box)
+
+
+def remove_pole(grid):
+    """Quita el poste/pared que algunas hojas dibujan en las poses de trepar
+    (la ventana ya hace de pared)."""
+    h, w = len(grid), len(grid[0])
+    rows = [y for y in range(h) if any(grid[y])]
+    if not rows:
+        return grid
+    top, bot = rows[0], rows[-1]
+    span = bot - top + 1
+    cols_ = [x for x in range(w) if any(grid[y][x] for y in rows)]
+    left, right = cols_[0], cols_[-1]
+    cw = right - left + 1
+    edge = max(2, int(span * 0.04))
+
+    def rgb(c):
+        return int(c[1:3], 16), int(c[3:5], 16), int(c[5:7], 16)
+
+    def dist(a, b):
+        return max(abs(a[0] - b[0]), abs(a[1] - b[1]), abs(a[2] - b[2]))
+
+    cand = []
+    for x in range(w):
+        ys = [y for y in range(top, bot + 1) if grid[y][x]]
+        if len(ys) < span * 0.75 or ys[0] > top + edge or ys[-1] < bot - edge:
+            continue
+        cs = sorted(rgb(grid[y][x]) for y in ys)
+        med = cs[len(cs) // 2]
+        if sum(1 for c in cs if dist(c, med) <= 60) >= len(cs) * 0.6:
+            cand.append((x, med))
+    if not cand:
+        return grid
+    groups, cur = [], [cand[0]]
+    for c in cand[1:]:
+        if c[0] - cur[-1][0] <= 1:
+            cur.append(c)
+        else:
+            groups.append(cur)
+            cur = [c]
+    groups.append(cur)
+    out = [list(r) for r in grid]
+    done = False
+    for g in groups:
+        x0, x1 = g[0][0], g[-1][0]
+        if x1 - x0 + 1 > cw * 0.2:
+            continue
+        mid = (x0 + x1) / 2.0 - left
+        if cw * 0.3 < mid < cw * 0.7:
+            continue
+        meds = [m for _x, m in g]
+        for y in range(h):
+            for x in range(max(0, x0 - 2), min(w - 1, x1 + 2) + 1):
+                c = out[y][x]
+                if not c:
+                    continue
+                v = rgb(c)
+                near = min(dist(v, m) for m in meds)
+                if x0 <= x <= x1:
+                    if near <= 60 or sum(v) < 150:
+                        out[y][x] = None
+                elif near <= 35 or sum(v) < 120:
+                    out[y][x] = None
+        # restos de 1 px (orillas suavizadas del poste)
+        for x in range(max(1, x0 - 4), min(w - 2, x1 + 4) + 1):
+            for y in range(h):
+                if out[y][x] and not out[y][x - 1] and not out[y][x + 1]:
+                    out[y][x] = None
+        done = True
+    return out if done else grid
+
+
 def sheet_grids(path, animations):
     """Recorta las poses de la hoja: {nombre: [matriz de colores o None]}.
     Todas las matrices miden lo mismo y están alineadas por los pies."""
@@ -986,6 +1334,23 @@ def sheet_grids(path, animations):
     if not rows:
         return None
     specs = animations or {"quieta": [(0, 0)], "camina": [(0, 0), (0, 1)]}
+    # ["#", x0, y0, x1, y1]: recorte manual (la figura dentro de ese rectángulo de la imagen)
+    extra, crops = [], {}
+    for spec in specs.values():
+        for item in spec:
+            if item and item[0] == "#" and len(item) == 5:
+                key = tuple(int(v) for v in item[1:])
+                if key not in crops:
+                    box = crop_box(mask, *key)
+                    if box:
+                        crops[key] = len(extra)
+                        extra.append(box)
+    if extra:
+        rows = rows + [extra]
+        specs = {name: [(len(rows) - 1, crops[tuple(int(v) for v in it[1:])])
+                        if it and it[0] == "#" else it for it in spec
+                        if not (it and it[0] == "#" and tuple(int(v) for v in it[1:]) not in crops)]
+                 for name, spec in specs.items()}
     wanted = {}
     for name, spec in specs.items():
         poses = resolve_poses(spec, rows)
@@ -1014,8 +1379,12 @@ def sheet_grids(path, animations):
         return grid
 
     made = {}
-    return {name: [made.setdefault(fp, make(*fp)) for fp in poses]
-            for name, poses in wanted.items()}
+    out = {name: [made.setdefault(fp, make(*fp)) for fp in poses]
+           for name, poses in wanted.items()}
+    for name in out:                                 # trepar: sin el poste dibujado
+        if name.startswith("trepa"):
+            out[name] = [remove_pole(g) for g in out[name]]
+    return out
 
 
 def cache_key(path, animations):
@@ -1565,7 +1934,7 @@ class Projectile:
         if kind == "lucero":
             self.reach = min(max(dist + 20, 120), LUCERO_REACH)
             self.speed = 950
-        elif kind == "mano":
+        elif kind in ("mano", "mano_inv"):
             self.reach = min(max(dist + 10, 120), SHOT_RANGE)
             self.speed = 800
         elif kind == "corte":
@@ -1648,6 +2017,11 @@ class Projectile:
             self.y += self.dy * step
             self.travel += step
             self.spin += dt * 14
+            if self.target is not None and self.app.try_deflect(self):   # Reinhard la protege
+                self.phase = "boom"
+                self.boom_t = now
+                self.draw(now)
+                return True
             hit = self.check_hit()
             if self.grab_cursor and math.hypot(self.x - self.cursor_goal[0],
                                                self.y - self.cursor_goal[1]) < 16:
@@ -1660,7 +2034,7 @@ class Projectile:
                 except Exception as e:
                     print("Aviso:", e)
             if hit or self.travel >= self.reach or self.off_screen():
-                if self.kind in ("lucero", "mano"):
+                if self.kind in ("lucero", "mano", "mano_inv"):
                     self.phase = "back"
                 else:
                     self.phase = "boom"
@@ -1698,8 +2072,8 @@ class Projectile:
         c.delete("all")
         pts = [(self.x, self.y)]
         anchor = None
-        if self.kind in ("lucero", "giro", "mano"):
-            hx, hy = self.owner.hand_front() if self.kind in ("lucero", "mano") else \
+        if self.kind in ("lucero", "giro", "mano", "mano_inv"):
+            hx, hy = self.owner.hand_front() if self.kind in ("lucero", "mano", "mano_inv") else \
                 (self.owner.x, self.owner.y + self.owner.y_off - self.owner.BH * 0.5)
             anchor = (hx, hy)
             pts.append(anchor)
@@ -1714,7 +2088,10 @@ class Projectile:
             self.geom = geom
         x, y = self.x - left, self.y - top
         col = self.colors
-        if anchor and self.kind == "mano":               # brazo de sombra
+        if anchor and self.kind == "mano_inv":           # mano invisible: casi transparente
+            ax, ay = anchor[0] - left, anchor[1] - top
+            c.create_line(ax, ay, x, y, fill=col[1], width=2, dash=(3, 5), smooth=True)
+        elif anchor and self.kind == "mano":             # brazo de sombra
             ax, ay = anchor[0] - left, anchor[1] - top
             c.create_line(ax, ay, x, y, fill=col[-1], width=7, smooth=True, capstyle="round")
             c.create_line(ax, ay, x, y, fill=col[1], width=3, capstyle="round")
@@ -1737,6 +2114,15 @@ class Projectile:
             c.create_oval(x - r, y - r, x + r, y + r, fill="#9aa1ab", outline="#2f3338", width=2)
             c.create_oval(x - r * 0.5, y - r * 0.6, x - r * 0.05, y - r * 0.15, fill="#e8ecf2",
                           outline="")
+        elif self.kind == "mano_inv":
+            a = self.angle if self.phase == "go" else self.angle + math.pi
+            r = 8
+            for i in range(4):
+                fa = a + (i - 1.5) * 0.38
+                c.create_line(x + math.cos(fa) * r, y + math.sin(fa) * r,
+                              x + math.cos(fa) * (r + 9), y + math.sin(fa) * (r + 9),
+                              fill=col[1], width=2, dash=(2, 2))
+            c.create_oval(x - r, y - r, x + r, y + r, outline=col[1], width=2, dash=(3, 2))
         elif self.kind == "mano":                        # mano de sombra
             a = self.angle if self.phase == "go" else self.angle + math.pi
             r = 8
@@ -1781,13 +2167,358 @@ class Projectile:
                 pass
 
 
+# ---------- Utilería: puertas, mesa de té, platos, escarcha, corazones, trofeo... ----------
+def make_overlay(root, solid=None):
+    """Ventana sin bordes, siempre encima y que el mouse atraviesa."""
+    win = tk.Toplevel(root)
+    win.overrideredirect(True)
+    win.attributes("-topmost", True)
+    if solid:
+        win.config(bg=solid)
+    else:
+        try:
+            win.attributes("-transparentcolor", TRANSPARENT)
+        except tk.TclError:
+            pass
+        win.config(bg=TRANSPARENT)
+    canvas = tk.Canvas(win, width=10, height=10, bg=solid or TRANSPARENT,
+                       highlightthickness=0, bd=0)
+    canvas.pack()
+    win.update_idletasks()
+    try:
+        hwnd = user32.GetAncestor(win.winfo_id(), GA_ROOT) or win.winfo_id()
+        ex = user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+        user32.SetWindowLongW(hwnd, GWL_EXSTYLE,
+                              ex | WS_EX_TRANSPARENT | WS_EX_LAYERED | WS_EX_TOOLWINDOW)
+    except Exception:
+        pass
+    return win, canvas
+
+
+class Prop:
+    """Un dibujo flotante. draw(canvas, w, h, t) lo dibuja (t = segundos de vida);
+    pos() devuelve (x, y) de la esquina, o (x, y, w, h) si cambia de tamaño.
+    alpha(t) (opcional) = opacidad de toda la ventana (para oscurecer la pantalla)."""
+
+    def __init__(self, app, w, h, draw, pos, seconds=None, fps=30, solid=None, alpha=None):
+        self.app = app
+        self.w, self.h = max(1, int(w)), max(1, int(h))
+        self.draw_fn, self.pos = draw, pos
+        self.born = time.perf_counter()
+        self.seconds = seconds
+        self.period = 1.0 / fps if fps else None
+        self.next_draw = 0.0
+        self.alpha = alpha
+        self.alive = True
+        self.shown = True
+        self.geom = None
+        self.win, self.canvas = make_overlay(app.root, solid)
+        self.win.withdraw()
+        self.shown = False
+        self.update(self.born)
+
+    def age(self, now=None):
+        return (now or time.perf_counter()) - self.born
+
+    def update(self, now):
+        if not self.alive:
+            return False
+        if self.seconds is not None and now - self.born >= self.seconds:
+            self.destroy()
+            return False
+        if self.app.hidden_all:
+            if self.shown:
+                self.win.withdraw()
+                self.shown = False
+            return True
+        try:
+            p = self.pos() if callable(self.pos) else self.pos
+        except Exception:
+            p = None
+        if p is None:                                  # ya no hay dónde ponerlo
+            self.destroy()
+            return False
+        if len(p) == 4:
+            x, y, w, h = p
+            w, h = max(1, int(w)), max(1, int(h))
+            if (w, h) != (self.w, self.h):
+                self.w, self.h = w, h
+                self.next_draw = 0.0
+        else:
+            x, y = p
+        geom = (self.w, self.h, int(x), int(y))
+        if geom != self.geom:
+            self.win.geometry("%dx%d+%d+%d" % geom)
+            self.canvas.config(width=self.w, height=self.h)
+            self.geom = geom
+        if self.alpha is not None:
+            try:
+                self.win.attributes("-alpha", max(0.0, min(1.0, self.alpha(now - self.born))))
+            except tk.TclError:
+                pass
+        if self.next_draw == 0.0 or (self.period and now >= self.next_draw):
+            self.canvas.delete("all")
+            try:
+                self.draw_fn(self.canvas, self.w, self.h, now - self.born)
+            except Exception as e:
+                print("Aviso:", e)
+            self.next_draw = now + (self.period or 1e9)
+        if not self.shown:
+            self.win.deiconify()
+            self.shown = True
+        return True
+
+    def destroy(self):
+        if self.alive:
+            self.alive = False
+            try:
+                self.win.destroy()
+            except Exception:
+                pass
+
+
+def ease(k):
+    k = max(0.0, min(1.0, k))
+    return k * k * (3 - 2 * k)
+
+
+def draw_door(color="#7a4a2a", frame="#d9b25a", total=1.1):
+    """Puerta de madera que se abre y se cierra (Beatrice)."""
+    def draw(c, w, h, t):
+        open_k = ease(t / 0.25) * (1.0 - ease((t - (total - 0.3)) / 0.3))
+        m = 3
+        c.create_rectangle(m, m, w - m, h - 1, fill="#140d1f", outline=frame, width=3)
+        c.create_oval(w * 0.3, h * 0.25, w * 0.7, h * 0.6, fill="#3b2a5c", outline="")
+        pw = (w - 2 * m) * (1.0 - 0.85 * open_k)           # la hoja de la puerta gira
+        c.create_rectangle(m, m, m + pw, h - 1, fill=color, outline=frame, width=2)
+        if pw > 10:
+            for k in (0.12, 0.55):
+                c.create_rectangle(m + pw * 0.18, h * k, m + pw * 0.82, h * (k + 0.33),
+                                   outline=frame, width=1)
+            c.create_oval(m + pw * 0.78, h * 0.52, m + pw * 0.9, h * 0.58, fill=frame,
+                          outline="")
+        c.create_arc(m, m - h * 0.06, w - m, h * 0.18, start=0, extent=180, style="arc",
+                     outline=frame, width=3)
+    return draw
+
+
+def draw_hearts(pet):
+    def draw(c, w, h, t):
+        hp = max(0.0, pet.hp)
+        n = HP_MAX
+        s = h - 2
+        for i in range(n):
+            x = 1 + i * (s + 2)
+            fill = hp - i
+            col = "#ff3b5c" if fill >= 1 else ("#ff9aac" if fill >= 0.5 else "#3a2a33")
+            pts = heart_points(x, 1, s)
+            c.create_polygon(*pts, fill=col, outline="#5a0d1c", width=1, smooth=True)
+    return draw
+
+
+def heart_points(x, y, s):
+    return [x + s * 0.5, y + s * 0.3, x + s * 0.2, y, x, y + s * 0.25, x + s * 0.05,
+            y + s * 0.55, x + s * 0.5, y + s, x + s * 0.95, y + s * 0.55, x + s,
+            y + s * 0.25, x + s * 0.8, y]
+
+
+def draw_ko_stars(c, w, h, t):
+    for i in range(3):
+        a = t * 3.2 + i * 2.094
+        x = w / 2 + math.cos(a) * w * 0.38
+        y = h / 2 + math.sin(a) * h * 0.3
+        r, q = 6, 2.4
+        c.create_polygon(x, y - r, x + q, y - q, x + r, y, x + q, y + q, x, y + r,
+                         x - q, y + q, x - r, y, x - q, y - q, fill="#ffe14d",
+                         outline="#b8860b")
+
+
+def draw_plate(c, w, h, t):
+    """Plato de omurice con cátsup y vaporcito (la comida de Rem)."""
+    cx, by = w / 2, h - 4
+    c.create_oval(2, by - 10, w - 2, by + 2, fill="#f4f4f4", outline="#9aa6b2", width=1)
+    c.create_oval(cx - w * 0.3, by - 20, cx + w * 0.3, by - 2, fill="#ffd34d",
+                  outline="#d89a1a", width=1)
+    c.create_line(cx - w * 0.12, by - 14, cx, by - 10, cx + w * 0.12, by - 14,
+                  fill="#e0322b", width=3, smooth=True)
+    for i in range(2):
+        x = cx - 6 + i * 12
+        dy = (t * 18 + i * 7) % 14
+        c.create_line(x, by - 24 - dy, x + 3, by - 30 - dy, x, by - 36 - dy, fill="#ffffff",
+                      width=2, smooth=True)
+
+
+def draw_tea_table(cups):
+    """Mesa redonda con mantel, tetera y tazas (Echidna)."""
+    def draw(c, w, h, t):
+        top = h * 0.42
+        c.create_line(w * 0.3, top + 6, w * 0.22, h - 1, fill="#5a3a22", width=4)
+        c.create_line(w * 0.7, top + 6, w * 0.78, h - 1, fill="#5a3a22", width=4)
+        c.create_oval(4, top - 8, w - 4, top + 14, fill="#f5f0ff", outline="#8c7aa8", width=2)
+        c.create_arc(4, top - 6, w - 4, top + 22, start=180, extent=180, style="chord",
+                     fill="#e6dcf7", outline="#8c7aa8")
+        tx = w * 0.5                                      # tetera
+        c.create_oval(tx - 10, top - 22, tx + 10, top - 3, fill="#ffffff", outline="#6a5a8a")
+        c.create_line(tx + 9, top - 15, tx + 17, top - 20, fill="#6a5a8a", width=2)
+        c.create_oval(tx - 3, top - 26, tx + 3, top - 21, fill="#6a5a8a", outline="")
+        slots = [w * 0.18, w * 0.82, w * 0.33, w * 0.67][:max(1, cups)]
+        for x in slots:
+            c.create_oval(x - 8, top - 4, x + 8, top + 1, fill="#ffffff", outline="#8c7aa8")
+            c.create_rectangle(x - 5, top - 11, x + 5, top - 2, fill="#ffffff",
+                               outline="#8c7aa8")
+            c.create_rectangle(x - 4, top - 10, x + 4, top - 8, fill="#b5703a", outline="")
+            dy = (t * 12 + x) % 10
+            c.create_line(x, top - 14 - dy, x + 2, top - 18 - dy, fill="#ffffff", width=1)
+    return draw
+
+
+def draw_frost(seconds):
+    """Escarcha y carámbanos en el borde de una ventana; se van derritiendo."""
+    seeds = [random.random() for _ in range(80)]
+
+    def draw(c, w, h, t):
+        melt = 1.0 - ease(max(0.0, (t - seconds * 0.55) / (seconds * 0.45)))
+        if melt <= 0.02:
+            return
+        m = 10
+        blue, light, white = "#7fc8ff", "#cdeeff", "#ffffff"
+        width = max(1, int(5 * melt))
+        c.create_rectangle(m, m, w - m, h - m, outline=light, width=width)
+        c.create_rectangle(m + 3, m + 3, w - m - 3, h - m - 3, outline=blue, width=1)
+        n = max(4, int((w - 2 * m) / 22))
+        for i in range(n):                                # carámbanos colgando del borde
+            x = m + (i + 0.5) * (w - 2 * m) / n
+            L = (8 + seeds[i % 80] * 22) * melt
+            c.create_polygon(x - 5, m, x + 5, m, x, m + L, fill=light, outline=blue)
+            if seeds[(i + 7) % 80] > 0.6 and melt < 0.9:   # gotitas
+                dy = (t * 60 + seeds[i % 80] * 50) % 40
+                c.create_oval(x - 2, m + L + dy, x + 2, m + L + dy + 4, fill=blue, outline="")
+        for (cx, cy) in ((m, m), (w - m, m), (m, h - m), (w - m, h - m)):   # copos
+            r = 16 * melt
+            for k in range(3):
+                a = k * math.pi / 3
+                c.create_line(cx - math.cos(a) * r, cy - math.sin(a) * r,
+                              cx + math.cos(a) * r, cy + math.sin(a) * r, fill=white, width=2)
+        for i in range(int(18 * melt)):                   # escarcha en los costados
+            side = i % 4
+            k = seeds[(i * 3) % 80]
+            if side == 0:
+                x, y = m + 4, m + k * (h - 2 * m)
+            elif side == 1:
+                x, y = w - m - 4, m + k * (h - 2 * m)
+            elif side == 2:
+                x, y = m + k * (w - 2 * m), h - m - 4
+            else:
+                x, y = m + k * (w - 2 * m), m + 4
+            r = 3 + seeds[(i * 5) % 80] * 4
+            c.create_line(x - r, y, x + r, y, fill=white)
+            c.create_line(x, y - r, x, y + r, fill=white)
+    return draw
+
+
+def draw_trophy(c, w, h, t):
+    bob = math.sin(t * 3) * 2
+    cx = w / 2
+    c.create_rectangle(cx - 12, h - 8 + bob, cx + 12, h - 2 + bob, fill="#8b5a2b", outline="")
+    c.create_rectangle(cx - 3, h - 18 + bob, cx + 3, h - 8 + bob, fill="#e0a800", outline="")
+    c.create_arc(cx - 14, 2 + bob, cx + 14, h - 12 + bob, start=180, extent=180,
+                 style="chord", fill="#ffd23f", outline="#b8860b", width=2)
+    c.create_rectangle(cx - 14, 6 + bob, cx + 14, (h - 12) / 2 + 4 + bob, fill="#ffd23f",
+                       outline="")
+    c.create_arc(cx - 22, 6 + bob, cx - 8, 22 + bob, start=90, extent=180, style="arc",
+                 outline="#b8860b", width=2)
+    c.create_arc(cx + 8, 6 + bob, cx + 22, 22 + bob, start=270, extent=180, style="arc",
+                 outline="#b8860b", width=2)
+    if int(t * 4) % 2:
+        c.create_text(cx + 15, 4 + bob, text="✦", fill="#fff6b0", font=("Segoe UI", 9))
+
+
+def draw_horn(pet):
+    """Cuerno de oni (Rem)."""
+    def draw(c, w, h, t):
+        glow = 0.5 + 0.5 * math.sin(t * 8)
+        c.create_oval(1, h * 0.3, w - 1, h - 1, fill="#cfe8ff" if glow > 0.5 else "#e8f4ff",
+                      outline="")
+        c.create_polygon(w * 0.5, 0, w * 0.75, h * 0.85, w * 0.25, h * 0.85, fill="#ffffff",
+                         outline="#9fc4e8", width=1)
+    return draw
+
+
+def draw_banner(text_fn):
+    def draw(c, w, h, t):
+        c.create_rectangle(2, 2, w - 2, h - 2, fill="#1e1530", outline="#ffd23f", width=3)
+        c.create_text(w / 2, h / 2, text=text_fn(), fill="#fff6d6",
+                      font=("Segoe UI", 13, "bold"))
+    return draw
+
+
+class Snow:
+    """Nieve sobre toda la pantalla (una ventana transparente por encima de todo)."""
+
+    def __init__(self, app, seconds, amount=70):
+        self.app = app
+        vs = app.virtual_screen()
+        self.left, self.top = vs[0], vs[1]
+        self.w, self.h = vs[2] - vs[0], vs[3] - vs[1]
+        self.until = time.perf_counter() + seconds
+        self.win, self.c = make_overlay(app.root)
+        self.win.geometry("%dx%d+%d+%d" % (self.w, self.h, self.left, self.top))
+        self.c.config(width=self.w, height=self.h)
+        self.flakes = []
+        for _ in range(amount):
+            r = random.uniform(1.5, 4)
+            x, y = random.uniform(0, self.w), random.uniform(-self.h, 0)
+            col = random.choice(["#ffffff", "#eef8ff", "#dff0ff"])
+            item = self.c.create_oval(x - r, y - r, x + r, y + r, fill=col, outline="#cfe6f7")
+            self.flakes.append([item, x, y, r, random.uniform(30, 75), random.uniform(0, 6)])
+        self.alive = True
+        self.shown = True
+
+    def update(self, now, dt):
+        if not self.alive:
+            return False
+        if self.app.hidden_all:
+            if self.shown:
+                self.win.withdraw()
+                self.shown = False
+            return True
+        if not self.shown:
+            self.win.deiconify()
+            self.shown = True
+        ending = now >= self.until
+        live = 0
+        for f in self.flakes:
+            item, x, y, r, vy, ph = f
+            if y > self.h + 10:
+                if ending:
+                    continue
+                y = -10
+                x = random.uniform(0, self.w)
+            y += vy * dt
+            x += math.sin(now * 1.3 + ph) * 18 * dt
+            f[1], f[2] = x, y
+            self.c.coords(item, x - r, y - r, x + r, y + r)
+            live += 1
+        if ending and not live:
+            self.destroy()
+            return False
+        return True
+
+    def destroy(self):
+        if self.alive:
+            self.alive = False
+            try:
+                self.win.destroy()
+            except Exception:
+                pass
+
+
 # ---------- La mascota ----------
 # Posición: (x, y) es el punto entre los pies (centro abajo) en coordenadas de pantalla.
 FALLBACK = {"corre": "camina", "camina": "quieta", "sentada": "quieta", "dormida": "quieta",
             "trepa": "camina", "salta": "cae", "cae": "quieta", "arrastrada": "cae",
             "empuja": "camina", "vuela": "salta"}
 WALKING_ANIMS = {"camina", "corre", "empuja"}
-SIZES = [0.4, 0.5, 0.6, 0.7, 0.85, 1.0, 1.25, 1.5]
 
 
 class Pet:
@@ -1795,15 +2526,15 @@ class Pet:
         self.app = app
         self.root = root = app.root
         self.cfg = cfg                                   # {"skin": ..., "escala": ...}
-        self.scale = float(cfg.get("escala") or SHEET_SCALE)
         self.skins = list_skins()
         if not self.skins:
             raise SystemExit("No encontré skins: pon pet.png junto al script o imágenes "
                              "en la carpeta 'skins'.")
         self.skin = resolve_skin_name(cfg.get("skin"), self.skins)
         cfg["skin"] = self.skin or ""
-        cfg["escala"] = self.scale
         self.grids, self.is_sheet, self.skin_cfg = load_grids(self.skin_path())
+        self.scale = self.target_scale()
+        cfg["escala"] = round(self.scale, 3)
 
         self.win = tk.Toplevel(root)
         self.win.overrideredirect(True)
@@ -1884,6 +2615,29 @@ class Pet:
         self.tp_dest = None
         self.beam = None
         self.pose_until = 0.0
+        self.hp = float(HP_MAX)          # vida (corazones) en las peleas
+        self.ko_until = 0.0
+        self.hp_prop = None
+        self.hp_show_until = 0.0
+        self.ko_prop = None
+        self.regreso_used = False
+        self.fight_origin = None
+        self.after_land = None           # algo que hacer al aterrizar (curar, entregar plato...)
+        self.reading = False             # Beatrice leyendo en una ventana
+        self.carry_prop = None           # plato que lleva Rem
+        self.horn_prop = None            # cuerno del modo oni
+        self.oni_until = 0.0
+        self.oni_cd = 0.0
+        self.confused_until = 0.0        # Shamak: no ve nada
+        self.follow_target = None        # Shaula siguiendo a su maestro
+        self.deflect_cd = 0.0
+        self.catch_checked = False
+        self.next_think = 0.0
+        self.last_pet = 0.0
+        self.serious_done = False
+        self.suppressed = False
+        self.pending_ko = False
+        self.follow_until = 0.0
 
         self.canvas.bind("<ButtonPress-1>", self.on_press)
         self.canvas.bind("<B1-Motion>", self.on_drag)
@@ -1927,11 +2681,30 @@ class Pet:
         return any(p.mgrab for p in self.app.others(self))
 
     # ---------- imágenes ----------
+    def native_height(self):
+        """Alto en píxeles (en la hoja) de la pose 'quieta'."""
+        g = (self.grids.get("quieta") or next(iter(self.grids.values())))[0]
+        rws = [y for y, row in enumerate(g) if any(row)]
+        return (max(rws) - min(rws) + 1) if rws else len(g)
+
+    def height_cm(self):
+        try:
+            return float(self.skin_cfg.get("altura_cm") or DEFAULT_HEIGHT_CM)
+        except (TypeError, ValueError):
+            return float(DEFAULT_HEIGHT_CM)
+
+    def target_scale(self):
+        """Escala para que mida lo que le toca según su estatura en el anime."""
+        px = self.app.size_px() * self.height_cm() / DEFAULT_HEIGHT_CM
+        return max(0.08, min(3.0, px / max(1, self.native_height())))
+
     def apply_scale(self, scale):
         eff = scale
         self.anims, self.BW, self.BH, self.hit, self.mirrored = build_animations(
             self.grids, eff, self.skin_cfg.get("mira_izquierda", False),
             self.skin_cfg.get("sin_espejo", []))
+        # largo del paso: proporcional a su tamaño (si no, los altos "patinan")
+        self.stride = max(3.0, self.BH * 0.075 * float(self.skin_cfg.get("paso", 1.0)))
         first = next(iter(self.anims.values()))[1][0]
         self.W, self.H = first.width(), first.height()
         self.canvas.config(width=self.W, height=self.H)
@@ -1957,7 +2730,7 @@ class Pet:
         self.say("Cambiando de skin...", 2)
         self.win.update_idletasks()
         self.grids, self.is_sheet, self.skin_cfg = load_grids(self.skin_path())
-        self.apply_scale(self.scale)
+        self.apply_scale(self.target_scale())
         self.particles.colors = list(self.skin_cfg.get("particulas") or PARTICLE_COLORS)
         self.cfg["skin"] = self.skin or ""
         self.app.save()
@@ -1989,7 +2762,7 @@ class Pet:
         frames = self.frames(self.anim_name)
         n = len(frames)
         if self.anim_name in WALKING_ANIMS or (self.anim_name == "trepa" and self.state == "climb"):
-            idx = int(self.walk_dist / WALK_STRIDE)
+            idx = int(self.walk_dist / self.stride)
         else:
             if self.anim_name == "dormida":
                 fps = SLEEP_FPS
@@ -2008,6 +2781,12 @@ class Pet:
         try:
             self.update(dt, now)
             self.draw(now)
+            if self.hp < HP_MAX and self.state != "ko" and not self.fight_role():
+                self.hp = min(float(HP_MAX), self.hp + HP_REGEN * dt)
+            self.update_hp_prop(now)
+            if now >= self.next_think:
+                self.next_think = now + 1.0
+                self.think(now)
         except Exception as e:                     # que un error raro no la congele
             print("Aviso:", e)
             self.to_air(0)
@@ -2018,7 +2797,7 @@ class Pet:
         self.react_treat()
         self.update_fx(dt, now)
         s = self.state
-        if s == "drag":
+        if s in ("drag", "hiding"):
             return
         if s == "tp":
             self.update_tp(now)
@@ -2155,6 +2934,7 @@ class Pet:
     # ---------- cambios de estado ----------
     def start_idle(self, t=None):
         self.state = "idle"
+        self.reading = False
         self.vx = 0
         self.timer = random.uniform(1.5, 4.0) if t is None else t
         self.set_anim("quieta")
@@ -2196,7 +2976,8 @@ class Pet:
     def start_sleep(self, t=None):
         def enter():
             self.state = "sleep"
-            self.timer = random.uniform(20, 50) if t is None else t
+            self.timer = random.uniform(20, 50) * (3 if self.app.is_night() else 1) \
+                if t is None else t
             self.set_anim("dormida")
         self.vx = 0
         self.with_intro("dormida", enter)
@@ -2246,6 +3027,11 @@ class Pet:
         self.surface = hwnd
         self.surf_rect = rect
         self.ignore = None
+        self.catch_checked = False
+        if self.pending_ko:                              # se desmayó en el aire
+            self.after_land = None
+            self.enter_ko()
+            return
         if self.in_game():                               # sigue jugando a las atrapadas
             self.state = "tag"
             self.set_anim("quieta")
@@ -2257,9 +3043,16 @@ class Pet:
             self.start_chase(None)
         else:
             self.start_idle(random.uniform(0.4, 1.8))
+        cb, self.after_land = self.after_land, None
+        if cb and self.state in ("idle", "oneshot"):
+            cb()
 
     # ---------- en el aire ----------
     def update_air(self, dt):
+        if not self.catch_checked and math.hypot(self.vx, self.vy) > 1500:
+            self.catch_checked = True                    # ¿alguien la atrapa? (Reinhard)
+            if self.app.try_catch(self):
+                return
         prev_y = self.y
         self.vy = min(self.vy + GRAVITY * dt, MAX_FALL_SPEED)
         self.x += self.vx * dt
@@ -2337,6 +3130,15 @@ class Pet:
             self.y = float(fl)
 
         s = self.state
+        if s == "ko":
+            self.update_ko(time.perf_counter())
+            return
+        if s == "follow":
+            self.update_follow(dt, m)
+            return
+        if s == "scorp":
+            self.update_scorp(dt, m)
+            return
         if s == "chase":
             self.update_chase(dt, m)
             return
@@ -2477,11 +3279,24 @@ class Pet:
             return
         if self.react_to_others():
             return
+        if self.reading and random.random() < 0.6:       # se quedó dormida leyendo
+            self.start_sleep(random.uniform(15, 35))
+            self.reading = True
+            return
         acts = dict(ACTIONS)
+        if self.app.is_night():                         # de noche: más sueño, menos correr
+            acts["dormir"] = acts.get("dormir", 4) * 5
+            for k in ("caminar", "correr", "volar", "travesura", "pelear_con", "disparar"):
+                if k in acts:
+                    acts[k] *= 0.4
+        if self.app.tournament or self.app.hide:
+            for k in ("pelear_con", "jugar_juntas", "esconderse", "pelear", "disparar"):
+                acts.pop(k, None)
         hostility = sum(max(0.0, -self.affinity(p)) for p in self.app.others(self))
         if "pelear_con" in acts:
             acts["pelear_con"] *= 1 + hostility * 0.6
         if len(self.app.pets) < 2 or self.app.game or self.app.fight:
+            acts.pop("esconderse", None)
             acts.pop("pelear_con", None)
             acts.pop("jugar_juntas", None)
             acts.pop("saludar", None)
@@ -2573,6 +3388,8 @@ class Pet:
             return self.app.start_fight(self, self.pick_partner(free, "pelea"))
         elif act == "disparar":
             return self.try_shoot()
+        elif act == "esconderse":
+            return self.app.start_hide(self)
         elif act == "perseguir":
             self.start_chase(random.uniform(*CHASE_SECONDS))
         elif act == "saltar_ventana":
@@ -2689,6 +3506,9 @@ class Pet:
             if abs(e.x_root - px) + abs(e.y_root - py) < 5:
                 return
             self.state = "drag"
+            self.after_land = None
+            self.reading = False
+            self.follow_target = None
             self.y_off = 0.0
             self.mgrab = None
             self.surface = None
@@ -2727,8 +3547,19 @@ class Pet:
             return
         if self.state in ("air", "climb"):
             return
+        if self.reading and self.state in ("sit", "sleep"):   # Beatrice leyendo: se enoja
+            self.angry_wake()
+            return
+        if self.state == "ko":                           # la ayudas a levantarse
+            self.recover(0.5)
+            self.app.add_affection(self.name(), 2)
+            return
+        if self.state != "sleep":
+            self.petted()
         if self.state == "sleep":
             self.wake()
+        elif self.state in ("fight", "beam", "tag", "follow", "scorp", "mgrab", "push"):
+            pass
         elif self.has_anim("feliz"):
             self.play_once("feliz", lambda: self.start_idle(random.uniform(1, 2.5)), seconds=1.5)
         else:
@@ -3027,9 +3858,10 @@ class Pet:
 
     def power(self):
         try:
-            return float(self.skin_cfg.get("poder", DEFAULT_POWER))
+            base = float(self.skin_cfg.get("poder", DEFAULT_POWER))
         except (TypeError, ValueError):
-            return float(DEFAULT_POWER)
+            base = float(DEFAULT_POWER)
+        return base + (3 if time.perf_counter() < self.oni_until else 0)
 
     def relation(self, other):
         rels = self.skin_cfg.get("relaciones") or {}
@@ -3081,7 +3913,8 @@ class Pet:
         self.say(self.phrase(cat, default, **kw), seconds)
 
     def abilities(self):
-        return list(self.skin_cfg.get("habilidades") or [])
+        off = self.app.disabled_abilities(self.name())
+        return [h for h in (self.skin_cfg.get("habilidades") or []) if h not in off]
 
     def acolors(self, name, default=None):
         return (self.skin_cfg.get("colores") or {}).get(name) or default or self.particles.colors
@@ -3140,6 +3973,10 @@ class Pet:
                 self.particles.emit(n, x, y - bh * 0.35, bw * 0.9, bh * 0.3, up=22, colors=c,
                                     speed=(5, 20), life=(1.2, 2.0), size=(2.5, 4), star=0.0,
                                     g=-4, drag=0.99)
+            elif k == "shamak":
+                self.particles.emit(n, x, y - bh * 0.5, bw * 0.75, bh * 0.55, up=12, colors=c,
+                                    speed=(5, 30), life=(0.7, 1.3), size=(4, 8), star=0.0,
+                                    g=-6, drag=0.98)
             elif k == "hielo_cursor" and self.mgrab and self.mgrab.get("freeze"):
                 fx_, fy_ = self.mgrab["freeze"]
                 self.particles.emit(n, fx_, fy_, 10, 10, up=0, colors=c, speed=(20, 70),
@@ -3224,6 +4061,40 @@ class Pet:
             return self.slash_window()
         elif h == "golpe_mouse":
             return self.smash_mouse()
+        elif h == "cocinar":
+            return self.cook()
+        elif h == "curar":
+            return self.try_heal()
+        elif h == "oni":
+            return self.go_oni()
+        elif h == "siesta_lectura":
+            return self.reading_nap()
+        elif h == "congelar_ventana":
+            return self.freeze_window()
+        elif h == "nevada":
+            if self.app.snow:
+                return False
+            self.app.start_snow(25)
+            self.speak("nevada", ["¡Mira, está nevando!"], 2.6)
+            self.add_fx("nieve", 6, self.acolors("nieve", ["#ffffff", "#eef8ff", "#cfeaff",
+                                                            "#a7cde8"]))
+            self.start_sit(6)
+        elif h == "escorpion":
+            return self.scorpion()
+        elif h == "maestro":
+            return self.follow_master()
+        elif h == "trivia":
+            return self.trivia()
+        elif h == "oscuridad":
+            return self.darkness()
+        elif h == "espada_seria":
+            return self.serious_sword()
+        elif h == "shamak":
+            return self.shamak()
+        elif h == "mano_invisible":
+            return self.invisible_hand()
+        elif h == "presume":
+            return self.show_off()
         else:
             return False
         return True
@@ -3264,6 +4135,8 @@ class Pet:
         self.particles.emit(32, self.x, self.y - self.BH / 2, self.BW * 0.5, self.BH * 0.5,
                             up=20, colors=cols, speed=(40, 150), life=(0.4, 0.9), star=0.6)
         self.speak("teletransporte", ["¡Puerta!"], 1.5)
+        if self.ability_on("puertas"):
+            self.door_at(self.x, self.y)
         self.state = "tp"
         self.vx = 0
         self.tp_until = time.perf_counter() + 0.6
@@ -3271,6 +4144,13 @@ class Pet:
         self.win.withdraw()
         self.hidden = True
         return True
+
+    def door_at(self, x, y):
+        """Dibuja la puerta del Archivo Prohibido (Beatrice)."""
+        w, h = max(34, self.BW * 0.95), max(50, self.BH * 1.15)
+        self.app.add_prop(Prop(self.app, w, h, draw_door(), (x - w / 2, y - h), seconds=1.1,
+                               fps=30))
+        self.app.sound("puerta")
 
     def update_tp(self, now):
         if now < self.tp_until:
@@ -3282,7 +4162,10 @@ class Pet:
         self.x, self.y = tx, ty
         self.hidden = False
         self.win_pos = None
-        self.win.deiconify()
+        if not self.app.hidden_all:
+            self.win.deiconify()
+        if self.ability_on("puertas"):
+            self.door_at(tx, ty)
         cols = self.acolors("teletransporte")
         self.particles.clear()
         self.particles.emit(32, self.x, self.y - self.BH / 2, self.BW * 0.5, self.BH * 0.5,
@@ -3399,6 +4282,8 @@ class Pet:
             if user32.IsWindow(hwnd) and self.app.flag("poderes_pesados"):
                 user32.ShowWindow(hwnd, 6)            # SW_MINIMIZE
         self.shoot(px, py, None, kind="corte", on_reach=cut, big=True)
+        if self.has_anim("extra_espada"):
+            self.set_anim("extra_espada")
         self.state = "beam"
         self.vx = 0
         self.beam = {"phase": "fire", "t": time.perf_counter() + 1.2, "then": None,
@@ -3436,6 +4321,12 @@ class Pet:
                 and abs(p.y - self.y) < 10 and abs(p.x - self.x) < ENEMY_NEAR]
         for p in near:
             a = self.affinity(p)
+            if a <= -2 and p.power() - self.power() >= 4 and random.random() < 0.6:
+                self.speak("molesta", ["¡N-no te acerques!"], 2.4, otra=p.name())
+                away = 1 if self.x >= p.x else -1           # le tiene miedo: se aleja
+                lo, hi = self.surface_bounds(self.monitor_at(self.x))
+                self.go_to(min(max(self.x + away * 420, lo), hi), None)
+                return True
             if a <= -2 and random.random() < 0.5:
                 self.facing = 1 if p.x > self.x else -1
                 self.speak("molesta", ["¿Qué haces aquí?"], 2.4, otra=p.name())
@@ -3472,29 +4363,51 @@ class Pet:
 
     # ---------- habilidades de Echidna y Satella ----------
     def tea_party(self):
+        """Fiesta de té: pone una mesita con tazas e invita hasta a tres."""
         if self.state not in ("idle", "walk", "sit", "oneshot", "chase"):
             return False
-        self.add_fx("vapor", 10, self.acolors("te", ["#ffffff", "#f4f4f4", "#e2e2e2", "#c8c8c8"]))
-        self.speak("te", ["¿Gustas una taza de té?"], 2.6)
-        self.start_sit(10)
+        secs = 15.0
+        self.add_fx("vapor", secs, self.acolors("te", ["#ffffff", "#f4f4f4", "#e2e2e2", "#c8c8c8"]))
+        self.speak("te_mesa", ["¿Gustas una taza de té?"], 2.6)
+        side = self.facing
+        m = self.monitor_at(self.x)
+        lo, hi = self.surface_bounds(m)
+        if (side > 0 and self.x + self.BW * 1.6 > hi) or (side < 0 and self.x - self.BW * 1.6 < lo):
+            side = -side
+            self.facing = side
+        self.start_sit(secs)
+        tw, th = max(70.0, self.BW * 1.3), max(44.0, self.BH * 0.45)
+        x0, surf = self.x, self.surface
+        rel = side * (self.BW * 0.5 + tw * 0.5)
         guests = [p for p in self.app.others(self) if p.state in ("idle", "walk", "sit")
                   and abs(p.y - self.y) < 5 and p.surface == self.surface
-                  and abs(p.x - self.x) < 800]
-        if guests:
+                  and abs(p.x - self.x) < 900 and not p.hidden]
+        chosen = []
+        while guests and len(chosen) < 3:
             g = self.pick_partner(guests, "amiga")
-            side = 1 if g.x > self.x else -1
-            tx = self.x + side * (self.BW + g.BW) * 0.6
+            guests.remove(g)
             if g.affinity(self) <= -2:                    # no acepta el té de alguien que odia
-                self.root.after(1500, lambda: g.speak("rechaza_te", ["No, gracias."], 2.4,
-                                                      otra=self.name()))
-                return True
+                self.root.after(1500, lambda g=g: g.speak("rechaza_te", ["No, gracias."], 2.4,
+                                                          otra=self.name()))
+                continue
+            chosen.append(g)
 
-            def sit_down():
-                if g.state in ("idle",) and abs(g.y - self.y) < 5:
-                    g.facing = -side
+        def tpos():
+            if self.state != "sit" or self.surface != surf:
+                return None
+            return (self.x + rel - tw / 2, self.y - th)
+        self.app.add_prop(Prop(self.app, tw, th, draw_tea_table(len(chosen) + 1), tpos,
+                               seconds=secs, fps=6))
+        table_x = x0 + rel
+        spots = [table_x + side * (tw * 0.5 + 30), x0 - side * (self.BW * 0.9),
+                 table_x + side * (tw * 0.5 + 95)]
+        for g, sx in zip(chosen, spots):
+            def sit_down(g=g):
+                if g.state == "idle" and abs(g.y - self.y) < 5 and self.state == "sit":
+                    g.facing = 1 if self.x > g.x else -1
                     g.speak("te_invitada", ["¡Gracias por el té!"], 2.2, otra=self.name())
-                    g.start_sit(8)
-            g.go_to(tx, sit_down)
+                    g.start_sit(secs - 3)
+            g.go_to(min(max(sx, lo), hi), sit_down)
         return True
 
     def curious(self):
@@ -3554,7 +4467,8 @@ class Pet:
     def shot_kind(self):
         """Qué dispara: lo define "disparo" en el .json de la skin."""
         k = self.skin_cfg.get("disparo")
-        if k in ("lucero", "cristal", "hielo", "rayo", "bala", "elementos", "mano", "corte"):
+        if k in ("lucero", "cristal", "hielo", "rayo", "bala", "elementos", "mano", "corte",
+                 "mano_inv"):
             return k
         habs = self.abilities()
         if "rayo" in habs:
@@ -3569,10 +4483,12 @@ class Pet:
                     "hielo": ["#ffffff", "#dff4ff", "#9fd6ff", "#5f9bd0"],
                     "lucero": ["#ffffff", "#c9ced6", "#8b929c", "#4b5058"],
                     "mano": ["#b48cff", "#3d1f6e", "#1b0f2e", "#08040f"],
+                    "mano_inv": ["#ffffff", "#c9c2e6", "#8e86b0", "#5b5478"],
                     "elementos": ELEMENT_COLORS[0],
                     "corte": ["#ffffff", "#fff2b3", "#ffcc33", "#d48a00"]}
-        return (self.skin_cfg.get("colores") or {}).get("disparo") or \
-            defaults.get(kind) or self.particles.colors
+        cfgc = self.skin_cfg.get("colores") or {}
+        own = cfgc.get("disparo") if kind == self.shot_kind() else None
+        return cfgc.get(kind) or own or defaults.get(kind) or self.particles.colors
 
     def shoot(self, tx, ty, target=None, big=False, kind=None, grab_cursor=False, on_reach=None):
         """Dispara hacia (tx, ty). target: mascota a la que le apunta (para el golpe)."""
@@ -3580,7 +4496,9 @@ class Pet:
         cols = self.shot_colors(kind)
         self.facing = 1 if tx > self.x else -1
         self.pose_until = time.perf_counter() + 0.5
-        self.set_anim("mira" if self.has_anim("mira") else "quieta")
+        pose = self.skin_cfg.get("pose_disparo")
+        self.set_anim(pose if pose and self.has_anim(pose) else
+                      ("mira" if self.has_anim("mira") else "quieta"))
         hx, hy = self.hand_front()
         self.particles.emit(8, hx, hy, 4, 4, up=0, colors=cols, speed=(30, 90),
                             life=(0.15, 0.35), star=0.7, g=0)
@@ -3625,15 +4543,23 @@ class Pet:
                                    otra=shooter.name())
             self.root.after(delay, jump)
 
-    def projectile_hit(self, other, proj):
+    def projectile_hit(self, other, proj, mult=1.0):
         """Uno de mis disparos le pegó a 'other'."""
+        if other.state == "ko":
+            return
         f = self.app.fight
-        if f and other in (f["a"], f["b"]) and self in (f["a"], f["b"]):
+        in_fight = bool(f and other in (f["a"], f["b"]) and self in (f["a"], f["b"]))
+        if in_fight:
             f["hits"][self] = f["hits"].get(self, 0) + self.power()   # cada golpe vale su poder
         away = 1 if other.x > self.x else -1
         strength = max(0.5, min(4.0, 1 + (self.power() - other.power()) / 3.0))
+        if in_fight:                                      # pierde corazones según el poder
+            other.take_damage(max(0.4, min(3.0, 0.8 + (self.power() - other.power()) / 4.0))
+                              * mult, self)
+            if other.state == "ko" or other.pending_ko or not self.app.fight:
+                return
         cols = proj.colors if proj is not None else self.shot_colors(self.shot_kind())
-        if proj is not None and proj.kind == "mano":    # la mano de sombra la jala
+        if proj is not None and proj.kind in ("mano", "mano_inv"):   # la mano la jala
             other.get_hit(-away, cols, pull=True, strength=strength)
         else:
             other.get_hit(away, cols, strength=strength)
@@ -3766,8 +4692,19 @@ class Pet:
             self.fight_walk(self.x - (1 if dx > 0 else -1) * want * 0.5, dt, m)
             return
         if f["turn"] is self and now >= f["next"] and not f["resolve_at"]:
-            if "lucero" in self.abilities() and random.random() < 0.3 and dist < 170:
+            habs = self.abilities()
+            if self.ability_on("espada_seria") and not self.serious_done and \
+                    self.affinity(other) <= -2 and other.power() >= 7:
+                self.serious_done = True                  # contra Satella va en serio
+                self.serious_sword(other)
+            elif "lucero" in habs and random.random() < 0.3 and dist < 170:
                 self.spin_attack()
+            elif "shamak" in habs and random.random() < 0.3:
+                self.shamak()
+            elif "mano_invisible" in habs and random.random() < 0.25:
+                self.shoot(other.x, other.y + other.y_off - other.BH * 0.5, other, kind="mano_inv")
+            elif "manos" in habs and random.random() < 0.3:
+                self.shoot(other.x, other.y + other.y_off - other.BH * 0.5, other, kind="mano")
             else:
                 big = random.random() < 0.3
                 self.shoot(other.x, other.y + other.y_off - other.BH * 0.5, other, big=big)
@@ -3819,6 +4756,628 @@ class Pet:
             self.to_air(-380 * min(k, 1.6), direction * 340 * k, leave=False)
         else:
             self.to_air(-330 * min(k, 2.4), direction * 230 * k, leave=False)
+
+    # ---------- habilidades activas/pasivas (se pueden apagar en Configuración) ----------
+    def passives(self):
+        out = [k for k, key in (("celos", "celosa"), ("proteger", "protector"),
+                                ("puertas", "puertas")) if self.skin_cfg.get(key)]
+        if "regreso" in (self.skin_cfg.get("habilidades") or []):
+            out.append("regreso")
+        return out
+
+    def ability_on(self, name):
+        if name in self.app.disabled_abilities(self.name()):
+            return False
+        return name in (self.skin_cfg.get("habilidades") or []) or name in self.passives()
+
+    def free(self):
+        return self.state in ("idle", "walk", "sit", "oneshot") and not self.hidden
+
+    def stay_put(self, seconds):
+        """Se queda quieta un momento (mientras lanza algo)."""
+        self.state = "beam"
+        self.vx = 0
+        self.beam = {"phase": "fire", "t": time.perf_counter() + seconds, "then": None,
+                     "target": (self.x, self.y), "hwnd": None, "width": 7, "acc": 0.0}
+
+    # ---------- vida, desmayo y curación ----------
+    def take_damage(self, amount, attacker):
+        f = self.app.fight
+        if not f or self not in (f["a"], f["b"]) or self.state == "ko":
+            return
+        self.hp = max(0.0, self.hp - amount)
+        self.hp_show_until = time.perf_counter() + 4
+        if self.hp <= 0:
+            self.knock_out(attacker)
+
+    def knock_out(self, attacker):
+        f = self.app.fight
+        if self.ability_on("regreso") and not self.regreso_used and f and self.fight_role():
+            self.return_by_death()
+            return
+        self.app.stat("kos")
+        self.app.sound("ko")
+        self.speak("ko", ["Me... desmayé..."], 3)
+        if self.state in ("air", "fly", "climb", "tp", "drag"):
+            self.pending_ko = True
+            if self.state == "fly":
+                self.to_air(0)
+        else:
+            self.enter_ko()
+        if f and self in (f["a"], f["b"]):
+            f["ko"] = self
+            self.app.end_fight(attacker if attacker in (f["a"], f["b"]) else None)
+
+    def enter_ko(self):
+        self.pending_ko = False
+        self.state = "ko"
+        self.vx = 0
+        self.beam = None
+        self.mgrab = None
+        self.reading = False
+        self.ko_until = time.perf_counter() + random.uniform(*KO_SECONDS)
+        name = "ko" if self.has_anim("ko") else ("aterriza" if self.has_anim("aterriza")
+                                                else "dormida")
+        self.set_anim(name, loop=False)
+        if self.ko_prop:
+            self.ko_prop.destroy()
+        w = max(56, self.BW * 0.9)
+
+        def pos():
+            if self.state != "ko" or self.hidden:
+                return None
+            return (self.x - w / 2, self.y + self.y_off - self.BH * 0.55 - 26)
+        self.ko_prop = self.app.add_prop(Prop(self.app, w, 30, draw_ko_stars, pos, fps=30))
+
+    def update_ko(self, now):
+        if now >= self.ko_until:
+            self.recover(0.4)
+
+    def recover(self, frac=1.0):
+        self.hp = max(self.hp, HP_MAX * frac)
+        self.pending_ko = False
+        if self.ko_prop:
+            self.ko_prop.destroy()
+            self.ko_prop = None
+        if self.state == "ko":
+            if self.has_anim("despierta"):
+                self.play_once("despierta", lambda: self.start_idle(1.0), seconds=1.4)
+            else:
+                self.start_idle(1.0)
+
+    def update_hp_prop(self, now):
+        f = self.app.fight
+        want = bool(f and self in (f["a"], f["b"])) or now < self.hp_show_until or \
+            self.state == "ko"
+        if want and not self.hidden:
+            if not self.hp_prop or not self.hp_prop.alive:
+                s = 11
+                w = HP_MAX * (s + 2) + 2
+
+                def pos():
+                    up = self.BH * 0.55 if self.state == "ko" else self.BH
+                    return (self.x - w / 2, self.y + self.y_off - up - 20)
+                self.hp_prop = self.app.add_prop(Prop(self.app, w, s + 3, draw_hearts(self),
+                                                      pos, fps=6))
+        elif self.hp_prop:
+            self.hp_prop.destroy()
+            self.hp_prop = None
+
+    def try_heal(self, target=None):
+        """Va con alguien lastimada o desmayada y la cura."""
+        if not self.free():
+            return False
+        if target is None:
+            hurt = [p for p in self.app.others(self)
+                    if (p.state == "ko" or p.hp < HP_MAX * 0.7) and not p.hidden
+                    and not p.fight_role() and p.state not in ("air", "fly", "drag", "tp")
+                    and math.hypot(p.x - self.x, p.y - self.y) < HEAL_RANGE]
+            if not hurt:
+                return False
+            target = max(hurt, key=lambda p: (p.state == "ko", self.affinity(p), -p.hp))
+        side = 1 if self.x < target.x else -1
+        tx = target.x - side * (self.BW + target.BW) * 0.42
+
+        def arrive():
+            if target in self.app.pets and abs(target.x - self.x) < (self.BW + target.BW) \
+                    and abs(target.y - self.y) < 40:
+                self.heal(target)
+        if target.surface == self.surface and abs(target.y - self.y) < 5:
+            m = self.monitor_at(self.x)
+            lo, hi = self.surface_bounds(m)
+            self.go_to(min(max(tx, lo), hi), arrive)
+            return True
+        dy = target.y - self.y
+        if -JUMP_REACH_UP * 1.3 <= dy <= 900 and abs(target.x - self.x) < JUMP_REACH_X * 2:
+            self.after_land = arrive
+            self.jump_to(tx, target.y)
+            return True
+        return False
+
+    def heal(self, target):
+        self.facing = 1 if target.x > self.x else -1
+        cols = self.acolors("curar", ["#ffffff", "#bfe8ff", "#6ec6ff", "#2f8fe0"])
+        target.particles.emit(30, target.x, target.y - target.BH * 0.5, target.BW * 0.5,
+                              target.BH * 0.45, up=60, colors=cols, speed=(10, 60),
+                              life=(0.6, 1.2), star=0.6, g=-20)
+        self.cast_shards(cols, n=12, toward=(target.x, target.y - target.BH * 0.5))
+        self.speak("curar", ["Ya, ya... te curo."], 2.4, otra=target.name())
+        self.play_once("feliz" if self.has_anim("feliz") else "quieta",
+                       lambda: self.start_idle(random.uniform(1, 2)), seconds=1.4)
+        target.hp_show_until = time.perf_counter() + 3
+        target.recover(1.0)
+        self.root.after(1500, lambda: target in self.app.pets and target.speak(
+            "gracias_cura", ["¡Gracias, {otra}!"], 2.2, otra=self.name()))
+        self.app.stat("curaciones")
+
+    # ---------- cariño contigo ----------
+    def petted(self):
+        now = time.perf_counter()
+        if now - self.last_pet < 2.0:
+            return
+        self.last_pet = now
+        n = self.app.add_affection(self.name(), 1)
+        self.app.stat("caricias")
+        self.app.sound("caricia")
+        if random.random() < 0.7:
+            self.speak("caricia_alta" if n >= 40 else "caricia", ["¡Jeje!", "¡Gracias!"], 2.2)
+        self.app.on_user_pet(self)
+
+    # ---------- Rem: cocinar, modo oni ----------
+    def cook(self):
+        if not self.free():
+            return False
+        self.speak("cocinar", ["¡A cocinar!"], 2.2)
+        self.add_fx("vapor", 4.5, ["#ffffff", "#f4f4f4", "#e2e2e2", "#c8c8c8"], rate=12)
+        self.start_sit(4.5)
+        self.root.after(4300, self.serve_dish)
+        return True
+
+    def plate_pos(self):
+        hx, hy = self.hand_front()
+        return (hx - 22, hy - 36)
+
+    def serve_dish(self):
+        if self not in self.app.pets or self.state not in ("sit", "idle"):
+            return
+        friends = [p for p in self.app.others(self) if p.state in ("idle", "walk", "sit")
+                   and not p.hidden and self.affinity(p) >= 0
+                   and math.hypot(p.x - self.x, p.y - self.y) < 1600]
+        target = max(friends, key=lambda p: (self.affinity(p), -abs(p.x - self.x))) \
+            if friends else None
+        self.start_idle(0.3)
+        self.carry_prop = self.app.add_prop(Prop(self.app, 44, 46, draw_plate, self.plate_pos,
+                                                 seconds=14, fps=12))
+        if target is None:
+            self.give_user_dish()
+            return
+
+        def deliver():
+            if target in self.app.pets and abs(target.x - self.x) < (self.BW + target.BW) * 1.3 \
+                    and abs(target.y - self.y) < 40:
+                if self.carry_prop:
+                    self.carry_prop.destroy()
+                    self.carry_prop = None
+                self.facing = 1 if target.x > self.x else -1
+                self.speak("plato", ["¡Para ti, {otra}!"], 2.4, otra=target.name())
+                self.app.stat("platos")
+                self.root.after(1200, lambda: target in self.app.pets and
+                                target.receive_dish(self))
+            else:
+                self.give_user_dish()
+        side = 1 if self.x < target.x else -1
+        tx = target.x - side * (self.BW + target.BW) * 0.45
+        if target.surface == self.surface and abs(target.y - self.y) < 5:
+            lo, hi = self.surface_bounds(self.monitor_at(self.x))
+            self.go_to(min(max(tx, lo), hi), deliver)
+        elif -JUMP_REACH_UP * 1.3 <= target.y - self.y <= 900 and \
+                abs(target.x - self.x) < JUMP_REACH_X * 2:
+            self.after_land = deliver
+            self.jump_to(tx, target.y)
+        else:
+            self.give_user_dish()
+
+    def give_user_dish(self):
+        self.speak("plato_usuario", ["¡Esto es para ti! ¡Provecho!"], 3)
+        if self.carry_prop:
+            self.carry_prop.seconds = self.carry_prop.age() + 3.5
+            self.carry_prop = None
+        cx, _cy = cursor_pos()
+        self.facing = 1 if cx > self.x else -1
+        if self.has_anim("extra_regalo"):
+            self.play_once("extra_regalo", lambda: self.start_idle(1.5), seconds=3)
+
+    def receive_dish(self, giver):
+        if self.state == "sleep":
+            self.wake()
+            return
+        self.speak("plato_recibe", ["¡Gracias, {otra}!"], 2.4, otra=giver.name())
+        self.particles.emit(14, self.x, self.y - self.BH * 0.7, self.BW * 0.4, 8, up=50,
+                            colors=["#ffd6e0", "#ff8fab", "#ff4d79", "#b3264d"], star=0.2)
+        if self.free() and self.has_anim("feliz"):
+            self.play_once("feliz", lambda: self.start_idle(random.uniform(1, 2)), seconds=1.6)
+
+    def go_oni(self, enemy=None):
+        now = time.perf_counter()
+        if now < self.oni_cd or self.state not in ("idle", "walk", "sit", "oneshot", "chase"):
+            return False
+        self.oni_until = now + 9
+        self.oni_cd = now + 45
+        self.buff_until = now + 9
+        self.add_fx("aura", 9, self.acolors("oni", ["#ffffff", "#e3f2ff", "#9fd0ff", "#4f8fd0"]),
+                    rate=40)
+
+        def horn():
+            if now + 9 < time.perf_counter() or self.hidden:
+                return None
+            return (self.x + self.facing * self.BW * 0.06 - 6, self.y + self.y_off - self.BH - 12)
+        self.horn_prop = self.app.add_prop(Prop(self.app, 12, 18, draw_horn(self), horn,
+                                                seconds=9, fps=15))
+        self.speak("oni", ["...modo oni."], 2.4, otra=enemy.name() if enemy else "")
+        if enemy is not None and random.random() < 0.7:
+            self.root.after(1200, lambda: enemy in self.app.pets and
+                            self.app.start_fight(self, enemy))
+            self.start_idle(1.2)
+        else:
+            self.start_walk(RUN_SPEED, 5)
+        return True
+
+    # ---------- Beatrice: leer arriba de una ventana ----------
+    def reading_nap(self):
+        if not self.free():
+            return False
+        opts = []
+        for i, (hwnd, l, t, r, b, standable) in enumerate(self.windows):
+            if not standable or r - l < self.BW * 3:
+                continue
+            wm = self.monitor_at((l + r) / 2, t + 5)
+            if t - self.BH < wm[1]:
+                continue
+            tx = random.uniform(l + self.BW, r - self.BW)
+            if self.point_visible(tx, t + 3, i):
+                opts.append((hwnd, tx, float(t)))
+
+        def settle():
+            self.reading = True
+            self.add_fx("paginas", 22, self.acolors("lectura", ["#ffffff", "#fff8e6", "#f0e2c0",
+                                                                "#c9b48a"]))
+            self.speak("siesta", ["Betty va a leer un rato, supongo."], 2.4)
+            self.start_sit(random.uniform(14, 22))
+            self.reading = True
+        if opts and "teletransporte" in self.abilities():
+            self.after_land = settle
+            if self.start_teleport(dest=random.choice(opts)):
+                return True
+            self.after_land = None
+        settle()
+        return True
+
+    def angry_wake(self):
+        self.reading = False
+        self.fx = [f for f in self.fx if f["kind"] != "paginas"]
+        self.speak("leyendo_enojada", ["¡Estaba leyendo!"], 2.8)
+        cx, cy = cursor_pos()
+        self.facing = 1 if cx > self.x else -1
+        self.cast_shards(self.acolors("cristales"), n=26, toward=(cx, cy))
+        self.particles.emit(16, self.x, self.y - self.BH * 0.8, self.BW * 0.4, 6, up=40,
+                            colors=["#ffd0d0", "#ff7a7a", "#e03030", "#801818"], star=0.5)
+        self.start_idle(1.6)
+        if "teletransporte" in self.abilities():
+            self.root.after(1500, lambda: self.state == "idle" and self.start_teleport())
+
+    # ---------- Emilia: congelar una ventana ----------
+    def freeze_window(self):
+        if not self.free():
+            return False
+        opts = []
+        for i, (h, l, t, r, b, standable) in enumerate(self.windows):
+            px, py = (l + r) / 2, t + min(120, (b - t) / 2)
+            if self.point_visible(px, py, i) and math.hypot(px - self.x, py - self.y) < 1600 \
+                    and not self.app.is_frozen(h):
+                opts.append((h, px, py))
+        if not opts:
+            return False
+        h, px, py = random.choice(opts)
+        self.speak("congelar_ventana", ["¡Hielo!"], 2.2)
+
+        def freeze(_proj, hwnd=h):
+            self.app.freeze_window(hwnd)
+        self.shoot(px, py, None, kind="hielo", on_reach=freeze)
+        self.stay_put(1.1)
+        return True
+
+    # ---------- Shaula: escorpión y su maestro ----------
+    def scorpion(self):
+        if not self.has_anim("extra_escorpion") or not self.free():
+            return False
+        self.speak("escorpion", ["¡Clac clac!"], 2)
+        self.particles.emit(20, self.x, self.y - self.BH * 0.4, self.BW * 0.5, self.BH * 0.3,
+                            up=30, colors=["#fff3c4", "#ffb347", "#d0601a", "#6b2a00"], star=0.6)
+        self.state = "scorp"
+        self.timer = random.uniform(4, 7)
+        self.vx = WALK_SPEED * 0.8 * random.choice([-1, 1])
+        self.facing = 1 if self.vx > 0 else -1
+        self.set_anim("extra_escorpion")
+        return True
+
+    def update_scorp(self, dt, m):
+        lo, hi = self.surface_bounds(m)
+        self.x += self.vx * dt
+        if self.x < lo or self.x > hi:
+            self.x = min(max(self.x, lo), hi)
+            self.vx = -self.vx
+            self.facing = 1 if self.vx > 0 else -1
+        self.set_anim("extra_escorpion")
+        self.timer -= dt
+        if self.timer <= 0:
+            self.start_idle(random.uniform(1, 2))
+
+    def master(self):
+        others = [p for p in self.app.others(self) if not p.hidden]
+        for p in others:
+            if p.name().lower() == "subaru":
+                return p
+        if not others:
+            return None
+        return max(others, key=lambda p: (self.app.affection(p.name()), self.affinity(p)))
+
+    def follow_master(self):
+        m = self.master()
+        if m is None or not self.free():
+            return False
+        self.follow_target = m
+        self.follow_until = time.perf_counter() + random.uniform(12, 22)
+        self.state = "follow"
+        self.speak("maestro", ["¡Maestro!"], 2.4, otra=m.name())
+        return True
+
+    def resume_follow(self):
+        if self.follow_target in self.app.pets and time.perf_counter() < self.follow_until \
+                and self.state == "idle":
+            self.state = "follow"
+
+    def update_follow(self, dt, m):
+        t = self.follow_target
+        now = time.perf_counter()
+        if t not in self.app.pets or t.hidden or now >= self.follow_until or self.app.fight \
+                and self.fight_role():
+            self.follow_target = None
+            self.start_idle(random.uniform(1, 2))
+            return
+        same = t.surface == self.surface and abs(t.y - self.y) < 8 and \
+            t.state not in ("air", "fly", "drag", "tp", "climb")
+        if same:
+            gap = (self.BW + t.BW) * 0.55
+            side = 1 if self.x < t.x else -1
+            d = (t.x - side * gap) - self.x
+            if abs(d) > 4:
+                speed = RUN_SPEED if abs(d) > 220 else WALK_SPEED * 1.3
+                step = max(-abs(d), min(abs(d), speed * self.spd() * dt)) * (1 if d > 0 else -1)
+                lo, hi = self.surface_bounds(m)
+                self.x = min(max(self.x + step, lo), hi)
+                self.walk_dist += abs(step)
+                self.facing = 1 if d > 0 else -1
+                self.set_anim("corre" if speed > WALK_SPEED * 1.5 else "camina")
+            else:
+                self.facing = 1 if t.x > self.x else -1
+                self.set_anim("quieta")
+                if random.random() < 0.002:
+                    self.speak("maestro", ["¡Maestro!"], 2, otra=t.name())
+        elif t.state in ("idle", "walk", "sit", "sleep", "oneshot", "goto", "chase", "follow",
+                         "beam") and now >= self.tag_cd:
+            self.tag_cd = now + 1.5
+            dy = t.y - self.y
+            if -JUMP_REACH_UP * 1.3 <= dy <= 900 and abs(t.x - self.x) < JUMP_REACH_X * 2:
+                self.after_land = self.resume_follow
+                self.jump_to(t.x - (1 if t.x > self.x else -1) * t.BW, t.y)
+            else:
+                self.set_anim("quieta")
+        else:
+            self.set_anim("quieta")
+
+    # ---------- Echidna: trivia ----------
+    def trivia(self):
+        if not self.free():
+            return False
+        q, a = random.choice(TRIVIA)
+        self.speak("trivia", ["Una pregunta para ti: {p}"], 7, p=q)
+        self.start_sit(10)
+        self.root.after(7500, lambda: self in self.app.pets and self.say("Respuesta: " + a, 5))
+        return True
+
+    # ---------- Satella: oscuridad y celos ----------
+    def darkness(self):
+        if self.app.darkness or not self.free():
+            return False
+        secs = 7.0
+        self.app.start_darkness(self, secs)
+        self.speak("oscuridad", ["Te amo..."], 2)
+        self.add_fx("sombra", secs, self.acolors("sombra", ["#c9a8ff", "#7b4bd6", "#3d1f6e",
+                                                            "#140a24"]))
+        self.play_once("sombra" if self.has_anim("sombra") else "quieta",
+                       lambda: self.start_idle(random.uniform(1, 2)), seconds=secs, loop=True)
+        return True
+
+    def jealous_hand(self, rival):
+        if rival not in self.app.pets or rival.hidden or not self.free():
+            return
+        if math.hypot(rival.x - self.x, rival.y - self.y) > SHOT_RANGE:
+            return
+        self.shoot(rival.x, rival.y + rival.y_off - rival.BH * 0.5, rival, kind="mano")
+        self.stay_put(1.3)
+
+    # ---------- Reinhard: proteger, atrapar y espada en serio ----------
+    def deflect(self, proj, target):
+        now = time.perf_counter()
+        self.deflect_cd = now + 4
+        if abs(self.y - target.y) < 10 and self.surface == target.surface:
+            side = 1 if proj.x > target.x else -1
+            lo, hi = self.surface_bounds(self.monitor_at(self.x))
+            old = self.x
+            self.x = min(max(target.x + side * (target.BW * 0.5 + self.BW * 0.45), lo), hi)
+            if abs(old - self.x) > 30:
+                self.particles.emit(14, old, self.y - self.BH / 2, self.BW * 0.3, self.BH * 0.4,
+                                    up=10, colors=self.acolors("bendicion"), star=0.6)
+            self.win_pos = None
+        self.facing = 1 if proj.x > self.x else -1
+        cols = ["#ffffff", "#fff2b3", "#ffcc33", "#d48a00"]
+        self.particles.emit(26, proj.x, proj.y, 6, 6, up=0, colors=cols, speed=(80, 220),
+                            life=(0.2, 0.5), star=0.9, g=0)
+        self.speak("protege", ["Detente."], 2, otra=proj.owner.name())
+        if self.has_anim("extra_espada"):
+            self.play_once("extra_espada", lambda: self.start_idle(1.5), seconds=1.0)
+        self.app.stat("desvios")
+
+    def catch_pet(self, pet):
+        cols = self.acolors("bendicion", ["#fffbe6", "#ffe58a", "#ffc93c", "#c98a00"])
+        self.particles.emit(20, self.x, self.y - self.BH / 2, self.BW * 0.4, self.BH * 0.4,
+                            up=20, colors=cols, speed=(40, 160), star=0.7)
+        self.x = pet.x + (1 if pet.vx > 0 else -1) * pet.BW * 0.7
+        self.y = pet.y
+        self.vx = self.vy = 0
+        self.surface = None
+        self.to_air(0, 0, leave=False)
+        self.win_pos = None
+        self.particles.clear()
+        self.particles.emit(24, self.x, self.y - self.BH / 2, self.BW * 0.5, self.BH * 0.4,
+                            up=30, colors=cols, speed=(60, 200), star=0.7)
+        pet.vx = 0
+        pet.vy = 0
+        self.speak("atrapa_vuelo", ["¡Te tengo!"], 2, otra=pet.name())
+        self.root.after(1100, lambda: pet in self.app.pets and pet.speak(
+            "gracias_cura", ["¡Gracias!"], 2, otra=self.name()))
+        self.app.stat("atrapadas")
+
+    def serious_sword(self, target=None):
+        if self.state not in ("idle", "walk", "sit", "oneshot", "chase", "fight"):
+            return False
+        now = time.perf_counter()
+        self.speak("espada_seria", ["Esta vez va en serio."], 2.6,
+                   otra=target.name() if target else "")
+        self.pose_until = now + 1.7
+        if self.has_anim("extra_espada"):
+            self.set_anim("extra_espada")
+        if self.state != "fight":
+            self.stay_put(1.9)
+        self.add_fx("aura", 1.6, ["#ffffff", "#fff6c2", "#ffd23f", "#d48a00"], rate=45)
+
+        def strike():
+            if self not in self.app.pets:
+                return
+            if target is not None and target in self.app.pets:
+                tx, ty = target.x, target.y + target.y_off - target.BH * 0.5
+            else:
+                tx = self.x + self.facing * 700
+                ty = self.y - self.BH * 0.6 - random.uniform(0, 250)
+            hx, hy = self.hand_front()
+            cols = ["#ffffff", "#fff6c2", "#ffd23f", "#d48a00"]
+            self.app.beams.append(Beam(self.root, hx, hy, tx, ty, cols, width=26, seconds=0.6))
+            self.app.flash("#fff3c0", 0.4, 0.5)
+            if target is not None and target in self.app.pets:
+                self.projectile_hit(target, None, mult=2.0)
+        self.root.after(900, strike)
+        return True
+
+    # ---------- Subaru ----------
+    def return_by_death(self):
+        """Regreso por muerte: todo se oscurece y vuelve al punto donde empezó la pelea."""
+        self.regreso_used = True
+        self.app.flash("#12081f", 0.8, 1.3)
+        self.app.sound("regreso")
+        self.app.stat("regresos")
+        self.particles.clear()
+        self.hp = float(HP_MAX)
+        self.pending_ko = False
+        o = self.fight_origin
+        surf, x, y = (o[0], o[1], o[2]) if o else (self.surface, self.x, self.y)
+        if surf is not None and not window_ok(surf):
+            surf = None
+        if surf is None:
+            y = float(self.monitor_at(x)[3])
+        self.x = x
+        self.vx = self.vy = 0
+        self.y_off = 0.0
+        self.win_pos = None
+        self.state = "air"
+        self.land(surf, y, visible_rect(surf) if surf else None)
+        self.pose_until = time.perf_counter() + 1.5
+        self.root.after(500, lambda: self.speak("regreso", ["...¿Otra vez aquí?"], 2.8))
+        for p in self.app.others(self):
+            if p.ability_on("celos") and p.affinity(self) >= 3 and random.random() < 0.7:
+                self.root.after(1800, lambda p=p: p in self.app.pets and
+                                p.speak("oscuridad", ["Te amo..."], 2.4))
+
+    def shamak(self):
+        if self.state not in ("idle", "walk", "sit", "oneshot", "chase", "fight"):
+            return False
+        now = time.perf_counter()
+        pets = [p for p in self.app.others(self) if not p.hidden and
+                p.state not in ("drag", "tp") and math.hypot(p.x - self.x, p.y - self.y) < 800]
+        cols = self.acolors("shamak", ["#6b5a8e", "#3a2f52", "#1d1729", "#0a080f"])
+        self.speak("shamak", ["¡Shamak!"], 2)
+        if self.state != "fight":
+            self.stay_put(1.0)
+        if not pets:
+            self.add_fx("shamak", 3, cols)
+            self.root.after(1600, lambda: self.say("...¿y ahora qué hago?", 2))
+            return True
+        f = self.app.fight
+        if f and self.fight_role():
+            p = f["b"] if f["a"] is self else f["a"]
+        else:
+            p = min(pets, key=lambda q: abs(q.x - self.x) + abs(q.y - self.y))
+        p.add_fx("shamak", 4.5, cols)
+        p.confused_until = now + 4.5
+        self.root.after(500, lambda: p in self.app.pets and p.speak(
+            "ciega", ["¡¿Q-qué?! ¡No veo nada!", "¡Todo está oscuro!"], 2.2))
+        if p.state in ("idle", "walk", "sit"):
+            p.start_walk(WALK_SPEED * 0.6, 4)
+        if f and f.get("turn") is p:
+            f["next"] += 2.5
+        return True
+
+    def invisible_hand(self):
+        if not self.free() and self.state != "chase":
+            return False
+        pets = [p for p in self.app.others(self) if p.state not in ("drag", "tp")
+                and not p.hidden and math.hypot(p.x - self.x, p.y - self.y) < SHOT_RANGE]
+        if pets and random.random() < 0.7:
+            p = min(pets, key=lambda q: abs(q.x - self.x) + abs(q.y - self.y))
+            self.shoot(p.x, p.y + p.y_off - p.BH * 0.5, p, kind="mano_inv")
+        elif self.fight_on and MOUSE_PLAY:
+            cx, cy = cursor_pos()
+            if math.hypot(cx - self.x, cy - self.y) > SHOT_RANGE:
+                return False
+            self.shoot(cx, cy, None, kind="mano_inv", grab_cursor=True)
+        else:
+            return False
+        self.speak("mano_invisible", ["¡Mano invisible!"], 2)
+        self.stay_put(1.3)
+        self.root.after(1700, lambda: self in self.app.pets and self.say(
+            random.choice(["Ugh... mi corazón...", "Eso... duele..."]), 2))
+        return True
+
+    def show_off(self):
+        if not self.free():
+            return False
+        self.speak("presume", ["¡Mi nombre es Natsuki Subaru!"], 3)
+        self.particles.emit(24, self.x, self.y - self.BH * 0.6, self.BW * 0.6, self.BH * 0.4,
+                            up=60, colors=["#fff6b0", "#ffd23f", "#ffb000", "#a86b00"], star=0.9)
+        name = "presume" if self.has_anim("presume") else "feliz"
+        self.play_once(name, lambda: self.start_idle(random.uniform(1, 2)), seconds=2.5,
+                       loop=True)
+        return True
+
+    # ---------- cosas que revisa cada segundo ----------
+    def think(self, now):
+        if self.hidden or self.state not in ("idle", "walk", "sit"):
+            return
+        if self.ability_on("oni") and now >= self.oni_cd and not self.app.fight:
+            for p in self.app.others(self):
+                if self.affinity(p) <= -3 and not p.hidden and abs(p.y - self.y) < 200 and \
+                        abs(p.x - self.x) < ENEMY_NEAR * 1.6 and random.random() < 0.5:
+                    self.go_oni(p)
+                    return
 
     # ---------- con otras mascotas ----------
     def role(self):
@@ -3978,6 +5537,9 @@ class Pet:
         return False
 
     def destroy(self):
+        for pr in (self.hp_prop, self.ko_prop, self.horn_prop, self.carry_prop):
+            if pr:
+                pr.destroy()
         for w in (self.win, self.bubble.win, self.particles.win):
             try:
                 w.destroy()
@@ -4183,6 +5745,10 @@ class Pet:
             self.treat.destroy()
             self.treat = None
         self.say(self.phrase("comer", ["¡Rico!", "¡Gracias!", "Ñam ñam", "¡Otra!"]), 2.5, sound=False)
+        self.app.add_affection(self.name(), 3)
+        self.app.stat("galletas")
+        self.app.sound("comer")
+        self.app.on_user_pet(self)
         for p in self.app.others(self):                  # las que no alcanzaron
             if p.state in ("goto", "idle", "walk") and abs(p.x - self.x) < 600:
                 p.say(p.phrase("sin_galleta", ["Aww...", "¡Oye, era mía!", "Hmph"], otra=self.name()), 2)
@@ -4249,14 +5815,18 @@ class Pet:
         self.menu.add_checkbutton(label="Quedarse quieta", variable=self.pause_var,
                                   command=self.menu_pause)
         sizes = tk.Menu(self.menu, tearoff=0)
-        self.size_var = tk.DoubleVar(value=self.scale)
-        for sz in SIZES:
-            sizes.add_radiobutton(label="%d %%" % round(sz * 100), value=sz,
-                                  variable=self.size_var, command=self.menu_size)
-        self.menu.add_cascade(label="Tamaño", menu=sizes)
+        for label, px in SIZE_OPTIONS:
+            sizes.add_radiobutton(label=label, value=px, variable=self.app.size_var,
+                                  command=self.app.set_size)
+        self.menu.add_cascade(label="Tamaño (todas, a escala)", menu=sizes)
         self.skin_menu = tk.Menu(self.menu, tearoff=0, postcommand=self.fill_skin_menu)
         self.skin_var = tk.StringVar(value=self.skin or "")
         self.menu.add_cascade(label="Skin", menu=self.skin_menu)
+        self.menu.add_checkbutton(label="Sonidos", variable=v["sonidos"],
+                                  command=lambda: self.app.set_flag("sonidos"))
+        self.menu.add_command(label="Configuración...", command=self.app.open_config)
+        self.menu.add_command(label="Estadísticas y logros...", command=self.app.open_stats)
+        self.menu.add_command(label="Esconder todas  (Ctrl+Alt+M)", command=self.app.toggle_panic)
         self.menu.add_separator()
         self.autostart_var = tk.BooleanVar(value=autostart_enabled())
         self.menu.add_checkbutton(label="Iniciar con Windows", variable=self.autostart_var,
@@ -4277,6 +5847,9 @@ class Pet:
                       state="normal" if many else "disabled")
         m.add_command(label="Pelear con otra", command=self.menu_fight_pet,
                       state="normal" if many else "disabled")
+        m.add_command(label="Cancelar torneo" if self.app.tournament else "¡Torneo!",
+                      command=self.menu_tournament, state="normal" if many else "disabled")
+        m.add_command(label="Jugar a las escondidas", command=self.menu_hide)
         m.add_separator()
         m.add_command(label="Quitar esta mascota", command=lambda: self.app.remove_pet(self),
                       state="normal" if many else "disabled")
@@ -4491,16 +6064,73 @@ class Pet:
         if self.paused and self.state in ("walk", "goto"):
             self.start_idle(3.0)
 
-    def menu_size(self):
-        sz = self.size_var.get()
-        self.apply_scale(sz)
-        self.cfg["escala"] = sz
-        self.app.save()
+    def menu_tournament(self):
+        if not self.app.start_tournament():
+            self.say("Se necesitan al menos dos para un torneo", 2.5)
+
+    def menu_hide(self):
+        if self.state == "sleep":
+            self.wake()
+            return
+        if self.state not in ("idle", "walk", "sit", "oneshot"):
+            self.start_idle(0.2)
+        if not self.app.start_hide(self):
+            self.say("Ahorita no puedo esconderme", 2.5)
 
 
 # ---------- La aplicación: maneja a todas las mascotas ----------
 FLAG_DEFAULTS = {"volar": True, "pelear_mouse": MOUSE_FIGHT, "travesuras": PRANKS,
-                 "recordatorios_activos": True, "poderes_pesados": POWER_FLAG_DEFAULT}
+                 "recordatorios_activos": True, "poderes_pesados": POWER_FLAG_DEFAULT,
+                 "sonidos": False, "ocultar_pantalla_completa": True, "dia_noche": True,
+                 "nieve_diciembre": True}
+FLAG_LABELS = [("volar", "Volar (las que saben volar)"),
+               ("pelear_mouse", "Pelear por el mouse"),
+               ("travesuras", "Travesuras (empujar y sacudir ventanas)"),
+               ("poderes_pesados", "Poderes pesados (minimizar ventanas, lanzar el mouse)"),
+               ("recordatorios_activos", "Recordatorios"),
+               ("sonidos", "Sonidos (pon tus .wav en la carpeta 'sonidos')"),
+               ("ocultar_pantalla_completa", "Esconderse si abres algo en pantalla completa"),
+               ("dia_noche", "Día y noche (de noche duermen más, saludan en la mañana)"),
+               ("nieve_diciembre", "Nieve en diciembre")]
+ABILITY_LABELS = {
+    "limpiar": "Limpiar con burbujas", "aura": "Aura (corre más rápido)", "nieve": "Nieve",
+    "cristales": "Lanzar cristales", "congelar": "Congelar el mouse",
+    "teletransporte": "Teletransporte", "rayo": "Rayo", "super_salto": "Súper salto",
+    "lucero": "Lucero giratorio", "te": "Fiesta de té", "lectura": "Leer",
+    "curiosear": "Curiosear", "sombra": "Sombras", "manos": "Manos de sombra",
+    "bendicion": "Bendición divina", "minimizar": "Cortar (minimiza ventanas)",
+    "golpe_mouse": "Mandar volando el mouse", "cocinar": "Cocinar y llevar un plato",
+    "curar": "Curar a las lastimadas", "oni": "Modo oni", "siesta_lectura":
+    "Leer arriba de una ventana", "congelar_ventana": "Congelar una ventana",
+    "nevada": "Nevada en toda la pantalla", "escorpion": "Forma de escorpión",
+    "maestro": "Seguir a su maestro", "trivia": "Preguntas de trivia",
+    "oscuridad": "Oscurecer la pantalla", "espada_seria": "Espada en serio",
+    "shamak": "Shamak (nube de oscuridad)", "mano_invisible": "Mano invisible",
+    "presume": "Presumir", "regreso": "Regreso por muerte", "celos": "Celos",
+    "proteger": "Proteger y atrapar", "puertas": "Dibujar puertas"}
+ACHIEVEMENTS = [
+    ("primer_carino", "Primer cariño", "Acaricia a una mascota.", lambda a: a.st("caricias") >= 1),
+    ("mano_magica", "Mano mágica", "100 caricias.", lambda a: a.st("caricias") >= 100),
+    ("repostero", "Repostero", "Da 20 galletas.", lambda a: a.st("galletas") >= 20),
+    ("pleito", "¡Que empiece la pelea!", "10 peleas entre mascotas.", lambda a: a.st("peleas") >= 10),
+    ("knockout", "Knockout", "10 desmayos en peleas.", lambda a: a.st("kos") >= 10),
+    ("campeon", "Campeón", "Termina un torneo.", lambda a: a.st("torneos") >= 1),
+    ("detective", "Detective", "Encuentra 5 veces a quien se esconde.",
+     lambda a: a.st("escondidas") >= 5),
+    ("regreso", "Regreso por muerte", "Subaru volvió tras desmayarse.",
+     lambda a: a.st("regresos") >= 1),
+    ("sanadoras", "Sanadoras", "Rem o Emilia curaron 10 veces.", lambda a: a.st("curaciones") >= 10),
+    ("chef", "La comida de Rem", "Rem entregó 5 platos.", lambda a: a.st("platos") >= 5),
+    ("guardian", "Santo de la Espada", "Reinhard protegió o atrapó a alguien 5 veces.",
+     lambda a: a.st("desvios") + a.st("atrapadas") >= 5),
+    ("familia", "La familia completa", "Ten 8 mascotas a la vez.",
+     lambda a: a.st("max_mascotas") >= 8),
+    ("inseparables", "Inseparables", "Llega al cariño máximo con alguien.",
+     lambda a: any(v >= CARINO_MAX for v in (a.settings.get("cariño") or {}).values())),
+    ("compania", "Compañía constante", "10 horas juntos.", lambda a: a.st("minutos") >= 600),
+    ("buho", "Búho nocturno", "Tener las mascotas abiertas de madrugada.",
+     lambda a: a.st("noches") >= 1),
+]
 
 
 class App:
@@ -4517,8 +6147,32 @@ class App:
         self.projectiles = []
         self.shakes = []
         self.flung = None                # mouse volando (golpe de Reinhard)
+        self.props = []                  # puertas, mesas, escarcha, corazones...
+        self.snow = None
+        self.darkness = None
+        self.frozen = {}
+        self.tournament = None
+        self.banner = None
+        self.banner_text = ""
+        self.banner_keep = False
+        self.hide = None
+        self.hidden_all = False
+        self.panic = False
+        self.panic_down = False
+        self.fullscreen = False
+        self.mouse_was_down = False
+        self.config_win = None
+        self.stats_win = None
+        self.dirty = False
+        now0 = time.perf_counter()
+        self.next_heal = now0 + 3
+        self.next_daycheck = now0 + 5
+        self.next_minute = now0 + 60
+        self.next_dec_snow = now0 + 20
+        self.next_save = now0 + 30
         self.vars = {k: tk.BooleanVar(value=bool(self.settings.get(k, v)))
                      for k, v in FLAG_DEFAULTS.items()}
+        self.size_var = tk.IntVar(value=self.size_px())
         self.reminders = []
         self.next_rem_check = 0.0
         start = time.perf_counter()
@@ -4533,6 +6187,7 @@ class App:
         self.pets = []
         for c in cfgs:
             self.pets.append(Pet(self, c))
+        self.note_count()
         self.save()
         self.last = time.perf_counter()
         self.loop()
@@ -4560,30 +6215,60 @@ class App:
             try:
                 self.windows = list_windows(None)
                 self.monitors = get_monitors()
+                self.fullscreen = self.flag("ocultar_pantalla_completa") and fullscreen_app()
             except Exception as e:
                 print("Aviso:", e)
             self.next_scan = now + WINDOW_SCAN_MS / 1000.0
-        self.check_reminders(now)
-        self.update_treat(dt)
-        self.update_game(now)
-        self.update_fight(now)
-        self.beams = [b for b in self.beams if b.update(now)]
-        self.projectiles = [pr for pr in self.projectiles if pr.update(now, dt)]
-        self.update_fling(dt)
-        self.update_shakes(now)
-        for p in list(self.pets):
-            p.tick(dt, now)
+        try:
+            self.update_visibility()
+            down = left_down()
+            clicked = down and not self.mouse_was_down
+            self.mouse_was_down = down
+            if not self.hidden_all:
+                self.check_reminders(now)
+                self.update_treat(dt)
+                self.update_game(now)
+                self.update_fight(now)
+                self.update_tournament(now)
+                self.update_hide(now, clicked)
+                self.update_heal(now)
+                self.beams = [b for b in self.beams if b.update(now)]
+                self.projectiles = [pr for pr in self.projectiles if pr.update(now, dt)]
+                self.update_fling(dt)
+                self.update_shakes(now)
+                for p in list(self.pets):
+                    p.tick(dt, now)
+            self.props = [pr for pr in self.props if pr.update(now)]
+            if self.darkness is not None and not self.darkness.alive:
+                self.darkness = None
+            if self.snow is not None and not self.snow.update(now, dt):
+                self.snow = None
+            self.check_daytime(now)
+            if self.dirty and now >= self.next_save:
+                self.next_save = now + 30
+                self.dirty = False
+                self.save()
+        except Exception as e:
+            print("Aviso:", e)
         self.root.after(TICK_MS, self.loop)
 
     # --- mascotas ---
+    def note_count(self):
+        st = self.settings.setdefault("estadisticas", {})
+        if len(self.pets) > st.get("max_mascotas", 0):
+            st["max_mascotas"] = len(self.pets)
+            self.dirty = True
+            self.check_achievements()
+
     def add_pet(self, skin, near=None):
-        cfg = {"skin": skin, "escala": near.scale if near else SHEET_SCALE}
+        cfg = {"skin": skin}
         self.settings["mascotas"].append(cfg)
         pet = Pet(self, cfg)
         if near is not None:
             pet.x = near.x + random.choice([-1, 1]) * near.BW * 1.5
             pet.y = near.y - near.BH * 2
         self.pets.append(pet)
+        self.note_count()
         self.save()
         pet.say(pet.phrase("saludo", ["¡Hola!", "¡Ya llegué!", "¿Me extrañaste?"]), 2.5)
 
@@ -4592,6 +6277,10 @@ class App:
             pet.say("Soy la única, no me puedo ir", 3)
             return
         self.end_game(quiet=True)
+        if self.fight and pet in (self.fight["a"], self.fight["b"]):
+            self.end_fight(None)
+        if self.hide and self.hide["pet"] is pet:
+            self.hide = None
         self.pets.remove(pet)
         if pet.cfg in self.settings["mascotas"]:
             self.settings["mascotas"].remove(pet.cfg)
@@ -4696,20 +6385,30 @@ class App:
                 p.leave_game(quiet)
 
     # --- peleas amistosas ---
-    def start_fight(self, a, b):
+    def start_fight(self, a, b, torneo=False):
         if self.fight or self.game or a is b:
             return False
+        if self.tournament and not torneo:
+            return False
         for p in (a, b):
-            if p.state in ("drag", "tp") or p.hidden or p not in self.pets:
+            if p.state in ("drag", "tp", "ko", "hiding") or p.hidden or p not in self.pets:
                 return False
         if math.hypot(a.x - b.x, a.y - b.y) > 1600:
             return False
         now = time.perf_counter()
         self.fight = {"a": a, "b": b, "turn": a, "exchanges": 0, "hits": {},
-                      "max": random.randint(4, 7), "next": now + 1.0, "resolve_at": None,
-                      "until": now + FIGHT_SECONDS_MAX, "reached": False}
+                      "max": random.randint(10, 14) if torneo else random.randint(4, 7),
+                      "next": now + 1.0, "resolve_at": None, "torneo": torneo,
+                      "until": now + (45 if torneo else FIGHT_SECONDS_MAX), "reached": False}
+        self.stat("peleas")
         for p in (a, b):
             other = b if p is a else a
+            p.fight_origin = (p.surface, p.x, p.y)
+            p.regreso_used = False
+            p.serious_done = False
+            p.after_land = None
+            p.follow_target = None
+            p.reading = False
             p.mgrab = None
             p.chase_until = 0.0
             p.fight = False
@@ -4727,7 +6426,7 @@ class App:
         b.speak("pelea", ["¡Ven!"], 2, otra=a.name())
         keepers = [p for p in self.pets if p not in (a, b) and p.skin_cfg.get("pacificador")
                    and p.state in ("idle", "walk", "sit")]
-        if keepers and random.random() < 0.35:        # alguien muy fuerte las separa
+        if keepers and random.random() < 0.35 and not torneo:   # alguien muy fuerte las separa
             self.fight["peacemaker"] = random.choice(keepers)
             self.fight["intervene_at"] = now + random.uniform(2.5, 4.5)
         return True
@@ -4793,6 +6492,10 @@ class App:
             return
         self.fight = None
         a, b = f["a"], f["b"]
+        if winner is not None and winner in self.pets:
+            self.stat("victorias", who=winner.name())
+        if f.get("torneo"):
+            self.root.after(10, lambda: self.tournament_result(winner))
         for p in (a, b):
             if p not in self.pets:
                 continue
@@ -4825,9 +6528,665 @@ class App:
                 keep.append(sh)
         self.shakes = keep
 
+    # --- tamaño (estatura proporcional) ---
+    def size_px(self):
+        try:
+            return int(self.settings.get("tamaño_px", DEFAULT_SIZE_PX))
+        except (TypeError, ValueError):
+            return DEFAULT_SIZE_PX
+
+    def set_size(self):
+        self.settings["tamaño_px"] = int(self.size_var.get())
+        for p in self.pets:
+            p.apply_scale(p.target_scale())
+            p.cfg["escala"] = round(p.scale, 3)
+        self.save()
+
+    # --- pantalla completa (todos los monitores) ---
+    def screen_rects(self):
+        return monitor_rects() or self.monitors
+
+    def virtual_screen(self):
+        ms = self.screen_rects()
+        return (min(m[0] for m in ms), min(m[1] for m in ms),
+                max(m[2] for m in ms), max(m[3] for m in ms))
+
+    # --- utilería y efectos de pantalla ---
+    def add_prop(self, prop):
+        self.props.append(prop)
+        return prop
+
+    def flash(self, color, peak, secs):
+        vs = self.virtual_screen()
+
+        def alpha(t):
+            return peak * math.sin(math.pi * max(0.0, min(1.0, t / secs)))
+        self.add_prop(Prop(self, vs[2] - vs[0], vs[3] - vs[1], lambda c, w, h, t: None,
+                           (vs[0], vs[1]), seconds=secs, fps=0, solid=color, alpha=alpha))
+
+    def start_darkness(self, owner, secs):
+        vs = self.virtual_screen()
+
+        def alpha(t):
+            return 0.55 * ease(t / 1.5) * (1.0 - ease((t - (secs - 1.5)) / 1.5))
+        self.darkness = self.add_prop(Prop(self, vs[2] - vs[0], vs[3] - vs[1],
+                                           lambda c, w, h, t: None, (vs[0], vs[1]),
+                                           seconds=secs, fps=0, solid="#000000", alpha=alpha))
+        owner.next_topmost = 0.0                      # ella se queda por encima de la sombra
+
+        def whisper():
+            if owner in self.pets:
+                owner.speak("oscuridad", ["Te amo..."], 1.3)
+                owner.next_topmost = 0.0
+                try:
+                    owner.bubble.win.lift()
+                except tk.TclError:
+                    pass
+        for i in range(4):
+            self.root.after(1300 + i * 1400, whisper)
+        for p in self.others(owner):
+            if random.random() < 0.6:
+                self.root.after(int(random.uniform(1.5, 3.5) * 1000), lambda p=p: p in self.pets
+                                and p.speak("miedo", ["¿Q-qué pasa?", "Tengo un mal presentimiento..."],
+                                            2.2, otra=owner.name()))
+
+    def start_snow(self, secs):
+        if self.snow:
+            self.snow.until = max(self.snow.until, time.perf_counter() + secs)
+            return
+        try:
+            self.snow = Snow(self, secs)
+        except Exception as e:
+            print("Aviso:", e)
+
+    def is_frozen(self, hwnd):
+        pr = self.frozen.get(hwnd)
+        return bool(pr and pr.alive)
+
+    def freeze_window(self, hwnd):
+        if self.is_frozen(hwnd) or not user32.IsWindow(hwnd):
+            return
+        secs = 16
+
+        def pos(h=hwnd):
+            if not window_ok(h):
+                return None
+            l, t, r, b = visible_rect(h)
+            return (l - 12, t - 12, r - l + 24, b - t + 24)
+        p = pos()
+        if p is None:
+            return
+        self.frozen[hwnd] = self.add_prop(Prop(self, p[2], p[3], draw_frost(secs), pos,
+                                               seconds=secs, fps=8))
+        self.sound("hielo")
+
+    # --- esconder todas (Ctrl+Alt+M o pantalla completa) ---
+    def toggle_panic(self):
+        self.panic = not self.panic
+
+    def update_visibility(self):
+        down = keys_down(PANIC_KEYS)
+        if down and not self.panic_down:
+            self.panic = not self.panic
+        self.panic_down = down
+        want = self.panic or self.fullscreen
+        if want != self.hidden_all:
+            self.set_hidden_all(want)
+
+    def set_hidden_all(self, on):
+        self.hidden_all = on
+        for p in self.pets:
+            try:
+                if on:
+                    p.win.withdraw()
+                    p.bubble.hide()
+                    p.particles.clear()
+                elif not p.hidden:
+                    p.win.deiconify()
+                    p.win_pos = None
+            except tk.TclError:
+                pass
+        if on:
+            for b_ in self.beams + self.projectiles:
+                b_.destroy()
+            self.beams, self.projectiles = [], []
+        if self.treat:
+            try:
+                (self.treat.win.withdraw if on else self.treat.win.deiconify)()
+            except tk.TclError:
+                pass
+
+    # --- cariño, estadísticas y logros ---
+    def affection(self, name):
+        try:
+            return int((self.settings.get("cariño") or {}).get(name, 0))
+        except (TypeError, ValueError):
+            return 0
+
+    def add_affection(self, name, n):
+        d = self.settings.setdefault("cariño", {})
+        d[name] = max(0, min(CARINO_MAX, self.affection(name) + n))
+        self.dirty = True
+        self.check_achievements()
+        return d[name]
+
+    def st(self, key):
+        v = (self.settings.get("estadisticas") or {}).get(key, 0)
+        return v if isinstance(v, (int, float)) else 0
+
+    def stat(self, key, n=1, who=None):
+        st = self.settings.setdefault("estadisticas", {})
+        if who:
+            sub = st.setdefault(key, {})
+            sub[who] = sub.get(who, 0) + n
+        else:
+            st[key] = st.get(key, 0) + n
+        self.dirty = True
+        self.check_achievements()
+
+    def check_achievements(self):
+        got = self.settings.setdefault("logros", [])
+        for key, title, _desc, cond in ACHIEVEMENTS:
+            if key in got:
+                continue
+            try:
+                ok = cond(self)
+            except Exception:
+                ok = False
+            if ok:
+                got.append(key)
+                self.dirty = True
+                self.sound("logro")
+                awake = [p for p in self.pets if not p.hidden and p.state not in ("drag", "tp")]
+                if awake and not self.hidden_all:
+                    p = random.choice(awake)
+                    p.say("¡Logro desbloqueado!\n%s" % title, 5)
+                    p.particles.emit(26, p.x, p.y - p.BH * 0.8, p.BW * 0.6, 10, up=80,
+                                     colors=["#fff6b0", "#ffd23f", "#ffb000", "#a86b00"], star=0.9)
+
+    def disabled_abilities(self, name):
+        return (self.settings.get("habilidades_off") or {}).get(name, [])
+
+    def toggle_ability(self, name, ability, on):
+        off = self.settings.setdefault("habilidades_off", {}).setdefault(name, [])
+        if on and ability in off:
+            off.remove(ability)
+        elif not on and ability not in off:
+            off.append(ability)
+        self.save()
+
+    def sound(self, event):
+        if self.flag("sonidos"):
+            play_sound(event)
+
+    def on_user_pet(self, pet):
+        """Acariciaste o le diste galleta a 'pet': Satella se pone celosa."""
+        for s_ in self.pets:
+            if s_ is pet or not s_.ability_on("celos") or s_.hidden or s_.affinity(pet) >= 3:
+                continue
+            if not s_.free() or random.random() > 0.45:
+                continue
+            s_.facing = 1 if pet.x > s_.x else -1
+            s_.speak("celos", ["¿Por qué a {otra} y no a mí?"], 2.6, otra=pet.name())
+            if random.random() < 0.6:
+                self.root.after(1100, lambda s_=s_: s_.jealous_hand(pet))
+
+    # --- día y noche ---
+    def is_night(self):
+        if not self.flag("dia_noche"):
+            return False
+        h = time.localtime().tm_hour
+        return h >= NIGHT_START or h < NIGHT_END
+
+    def check_daytime(self, now):
+        if now < self.next_daycheck:
+            return
+        self.next_daycheck = now + 30
+        lt = time.localtime()
+        today = time.strftime("%Y-%m-%d")
+        awake = [p for p in self.pets if p.free()]
+        if self.flag("dia_noche") and awake and not self.hidden_all:
+            if 6 <= lt.tm_hour < 12 and self.settings.get("ultimo_buenos_dias") != today:
+                self.settings["ultimo_buenos_dias"] = today
+                self.dirty = True
+                random.choice(awake).speak("buenos_dias", ["¡Buenos días!"], 4)
+            elif lt.tm_hour == NIGHT_START and self.settings.get("ultimas_buenas_noches") != today:
+                self.settings["ultimas_buenas_noches"] = today
+                self.dirty = True
+                random.choice(awake).speak("buenas_noches", ["Ya es tarde, a dormir."], 4)
+        if lt.tm_hour < NIGHT_END and self.settings.get("ultima_noche") != today:
+            self.settings["ultima_noche"] = today
+            self.stat("noches")
+        if now >= self.next_minute:
+            self.next_minute = now + 60
+            self.stat("minutos")
+        if lt.tm_mon == 12 and self.flag("nieve_diciembre") and not self.snow \
+                and now >= self.next_dec_snow and not self.hidden_all:
+            self.next_dec_snow = now + 15 * 60
+            self.start_snow(90)
+
+    # --- curar a las lastimadas ---
+    def update_heal(self, now):
+        if now < self.next_heal:
+            return
+        self.next_heal = now + 1.5
+        hurt = [p for p in self.pets if (p.state == "ko" or p.hp < HP_MAX * 0.6)
+                and not p.fight_role() and not p.hidden]
+        if not hurt:
+            return
+        healers = [p for p in self.pets if p.ability_on("curar") and p.free() and p not in hurt]
+        if healers and random.random() < 0.6:
+            random.choice(healers).try_heal()
+
+    # --- protección de Reinhard ---
+    def try_deflect(self, proj):
+        if getattr(proj, "deflect_checked", False):
+            return False
+        t = proj.target
+        if t is None or t not in self.pets:
+            return False
+        if math.hypot(proj.x - t.x, proj.y - (t.y - t.BH * 0.5)) > 170:
+            return False
+        proj.deflect_checked = True
+        f = self.fight
+        if f and f.get("torneo"):
+            return False
+        now = time.perf_counter()
+        for r in self.pets:
+            if r in (proj.owner, t) or r.hidden or not r.ability_on("proteger"):
+                continue
+            if not r.free() or now < r.deflect_cd:
+                continue
+            if r.affinity(t) < 1 or r.affinity(proj.owner) > r.affinity(t):
+                continue
+            if math.hypot(r.x - t.x, r.y - t.y) > 420 or random.random() > 0.55:
+                continue
+            r.deflect(proj, t)
+            return True
+        return False
+
+    def try_catch(self, pet):
+        if self.fight and pet.fight_role():
+            return False
+        for r in self.pets:
+            if r is pet or r.hidden or not r.ability_on("proteger") or not r.free():
+                continue
+            if r.affinity(pet) < 0 or math.hypot(r.x - pet.x, r.y - pet.y) > 1800:
+                continue
+            if time.perf_counter() >= r.deflect_cd and random.random() < 0.45:
+                r.deflect_cd = time.perf_counter() + 15
+                r.catch_pet(pet)
+                return True
+        return False
+
+    # --- torneo ---
+    def start_tournament(self):
+        if self.tournament:
+            self.end_tournament(None)
+            return True
+        players = [p for p in self.pets if not p.hidden]
+        if len(players) < 2:
+            return False
+        self.end_game(quiet=True)
+        self.end_fight(None)
+        if self.hide:
+            self.end_hide(False)
+        random.shuffle(players)
+        queue, bye = self.pairs(players)
+        self.tournament = {"round": 1, "queue": queue, "bye": bye, "winners": [], "match": None,
+                           "next": time.perf_counter() + 2.5}
+        self.banner_text = "¡Torneo de Re:Zero! %d participantes" % len(players)
+        m = self.monitors[0]
+        w = 460
+
+        def pos():
+            if not self.tournament and not self.banner_keep:
+                return None
+            return ((m[0] + m[2]) / 2 - w / 2, m[1] + 12)
+        self.banner_keep = False
+        self.banner = self.add_prop(Prop(self, w, 46, draw_banner(lambda: self.banner_text), pos,
+                                         fps=4))
+        for p in players:
+            p.recover(1.0)
+            p.hp = float(HP_MAX)
+        self.sound("torneo")
+        random.choice(players).speak("torneo", ["¡Que empiece el torneo!"], 2.5)
+        return True
+
+    @staticmethod
+    def pairs(lst):
+        return [(lst[i], lst[i + 1]) for i in range(0, len(lst) - 1, 2)], \
+            (lst[-1] if len(lst) % 2 else None)
+
+    def update_tournament(self, now):
+        t = self.tournament
+        if not t or self.fight or t["match"] or now < t["next"]:
+            return
+        t["queue"] = [(a, b) for a, b in t["queue"] if a in self.pets and b in self.pets]
+        if not t["queue"]:
+            alive = [w for w in t["winners"] if w in self.pets]
+            if t["bye"] in self.pets:
+                alive.append(t["bye"])
+            if len(alive) <= 1:
+                self.end_tournament(alive[0] if alive else None)
+                return
+            t["round"] += 1
+            t["queue"], t["bye"] = self.pairs(alive)
+            t["winners"] = []
+            self.banner_text = "¡Ronda %d!" % t["round"] if len(alive) > 2 else "¡GRAN FINAL!"
+            t["next"] = now + 2.5
+            return
+        a, b = t["queue"].pop(0)
+        t["match"] = (a, b)
+        self.arena(a, b)
+        self.banner_text = "Ronda %d: %s  vs  %s" % (t["round"], a.name(), b.name())
+        self.root.after(1600, lambda: self.tournament_fight(a, b))
+
+    def arena(self, a, b):
+        m = self.monitors[0]
+        cx = (m[0] + m[2]) / 2
+        for p, dx in ((a, -FIGHT_DISTANCE), (b, FIGHT_DISTANCE)):
+            p.after_land = None
+            p.reading = False
+            p.follow_target = None
+            p.mgrab = None
+            p.beam = None
+            p.recover(1.0)
+            p.hp = float(HP_MAX)
+            p.particles.emit(20, p.x, p.y - p.BH / 2, p.BW * 0.5, p.BH * 0.5, up=20, star=0.6)
+            p.x, p.y = cx + dx, float(m[3])
+            p.surface = p.surf_rect = None
+            p.vx = p.vy = 0
+            p.y_off = 0.0
+            p.win_pos = None
+            if p.hidden:
+                p.hidden = False
+                if not self.hidden_all:
+                    p.win.deiconify()
+            p.particles.clear()
+            p.particles.emit(24, p.x, p.y - p.BH / 2, p.BW * 0.5, p.BH * 0.5, up=30, star=0.7)
+            p.start_idle(5)
+            p.facing = 1 if dx < 0 else -1
+
+    def tournament_fight(self, a, b):
+        t = self.tournament
+        if not t or t.get("match") != (a, b):
+            return
+        if not self.start_fight(a, b, torneo=True):
+            self.tournament_result(None)
+
+    def tournament_result(self, winner):
+        t = self.tournament
+        if not t or not t["match"]:
+            return
+        a, b = t["match"]
+        if winner not in (a, b):
+            if a.power() != b.power():
+                winner = a if a.power() > b.power() else b
+            else:
+                winner = random.choice([a, b])
+        t["winners"].append(winner)
+        t["match"] = None
+        t["next"] = time.perf_counter() + 4.5
+        self.banner_text = "¡Gana %s!" % winner.name()
+
+    def end_tournament(self, champ):
+        self.tournament = None
+        if champ is None or champ not in self.pets:
+            self.banner_text = "Torneo cancelado"
+            self.banner_keep = True
+            if self.banner:
+                self.banner.seconds = self.banner.age() + 2.5
+            return
+        self.banner_text = "¡%s gana el torneo!" % champ.name()
+        self.banner_keep = True
+        if self.banner:
+            self.banner.seconds = self.banner.age() + 7
+        self.stat("torneos")
+        self.stat("campeones", who=champ.name())
+        self.sound("torneo")
+        champ.recover(1.0)
+        champ.speak("campeon", ["¡Soy la campeona!", "¡Gané el torneo!"], 4)
+
+        def tpos():
+            if champ not in self.pets or champ.hidden:
+                return None
+            return (champ.x - 24, champ.y + champ.y_off - champ.BH - 52)
+        self.add_prop(Prop(self, 48, 44, draw_trophy, tpos, seconds=25, fps=20))
+        for p in self.others(champ):
+            if p.free() and random.random() < 0.7:
+                self.root.after(int(random.uniform(0.8, 2.5) * 1000), lambda p=p: p in self.pets
+                                and p.speak("felicita", ["¡Felicidades, {otra}!", "¡Bravo!"], 2.2,
+                                            otra=champ.name()))
+
+    # --- escondidas ---
+    def start_hide(self, pet=None):
+        if self.hide or self.fight or self.game or self.tournament or self.hidden_all:
+            return False
+        cands = [p for p in self.pets if p.free()]
+        if pet not in cands:
+            pet = random.choice(cands) if cands else None
+        if pet is None:
+            return False
+        opts = [(h, l, t, r, b) for (h, l, t, r, b, _st) in self.windows
+                if r - l >= 220 and b - t >= 160]
+        if not opts:
+            return False
+        h, l, t, r, b = random.choice(opts)
+        side = random.choice([-1, 1])
+        now = time.perf_counter()
+        self.hide = {"pet": pet, "hwnd": h, "side": side, "start": now + 2.6,
+                     "until": now + 2.6 + HIDE_SECONDS, "hint": now + 2.6 + 15}
+        pet.speak("escondidas", ["¡Juguemos a las escondidas! Búscame en una ventana..."], 3)
+        pet.stay_put(2.7)
+
+        def vanish():
+            hd = self.hide
+            if not hd or hd["pet"] is not pet or pet not in self.pets:
+                return
+            pet.particles.emit(30, pet.x, pet.y - pet.BH / 2, pet.BW * 0.5, pet.BH * 0.5,
+                               up=30, star=0.6)
+            pet.win.withdraw()
+            pet.bubble.hide()
+            pet.hidden = True
+            pet.state = "hiding"
+            pet.vx = 0
+            self.place_hider()
+        self.root.after(2500, vanish)
+        for o in self.others(pet):
+            if random.random() < 0.5:
+                self.root.after(int(random.uniform(4, 9) * 1000), lambda o=o: o in self.pets and
+                                o.free() and o.speak("buscando", ["¿Dónde se metió {otra}?"], 2.4,
+                                                     otra=pet.name()))
+        return True
+
+    def place_hider(self):
+        hd = self.hide
+        if not hd or not user32.IsWindow(hd["hwnd"]):
+            return False
+        pet = hd["pet"]
+        l, t, r, b = visible_rect(hd["hwnd"])
+        pet.x = (l + 6) if hd["side"] < 0 else (r - 6)
+        pet.y = t + (b - t) * 0.55 + pet.BH * 0.5
+        return True
+
+    def update_hide(self, now, clicked):
+        hd = self.hide
+        if not hd:
+            return
+        pet = hd["pet"]
+        if pet not in self.pets:
+            self.hide = None
+            return
+        if now < hd["start"] or pet.state != "hiding":
+            return
+        hwnd = hd["hwnd"]
+        if not user32.IsWindow(hwnd) or not user32.IsWindowVisible(hwnd) or user32.IsIconic(hwnd):
+            self.end_hide(False)
+            return
+        if clicked:
+            cx, cy = cursor_pos()
+            l, t, r, b = visible_rect(hwnd)
+            if l <= cx <= r and t <= cy <= b:
+                self.end_hide(True)
+                return
+        if now >= hd["hint"]:                         # pista: brillitos y risitas
+            hd["hint"] = now + 9
+            self.place_hider()
+            pet.particles.emit(14, pet.x, pet.y - pet.BH * 0.5, 6, pet.BH * 0.3, up=30,
+                               star=0.7)
+            pet.bubble.show(random.choice(["jiji...", "¡Aquí no hay nadie!", "shhh..."]), 2.5)
+            pet.bubble.follow(pet.x, pet.y - pet.BH * 0.8, pet.monitor_at(pet.x), now)
+        if now >= hd["until"]:
+            self.end_hide(False)
+
+    def end_hide(self, found):
+        hd = self.hide
+        self.hide = None
+        if not hd:
+            return
+        pet = hd["pet"]
+        if pet not in self.pets:
+            return
+        hwnd = hd["hwnd"]
+        cx, _cy = cursor_pos()
+        if window_ok(hwnd):
+            l, t, r, b = visible_rect(hwnd)
+            pet.x = min(max(cx, l + pet.BW), r - pet.BW)
+            pet.y = float(t) - 5
+        pet.hidden = False
+        pet.win_pos = None
+        if not self.hidden_all:
+            pet.win.deiconify()
+        pet.state = "air"
+        pet.to_air(-520, 0, leave=False)
+        pet.particles.emit(30, pet.x, pet.y - pet.BH / 2, pet.BW * 0.5, pet.BH * 0.5, up=40,
+                           star=0.7)
+        if found:
+            pet.speak("encontrada", ["¡Me encontraste!", "¡Nooo! ¿Cómo supiste?"], 3)
+            self.stat("escondidas")
+            self.add_affection(pet.name(), 2)
+            self.sound("encontrada")
+        else:
+            pet.speak("gana_escondidas", ["¡Gané! No me encontraste.", "¡Aquí estaba!"], 3)
+
+    # --- ventanas de configuración y estadísticas ---
+    def open_config(self):
+        if self.config_win is not None:
+            try:
+                self.config_win.deiconify()
+                self.config_win.lift()
+                return
+            except tk.TclError:
+                self.config_win = None
+        from tkinter import ttk
+        w = tk.Toplevel(self.root)
+        self.config_win = w
+        w.title("Configuración - Mascotas")
+        w.attributes("-topmost", True)
+        w.protocol("WM_DELETE_WINDOW", lambda: (w.destroy(), setattr(self, "config_win", None)))
+        nb = ttk.Notebook(w)
+        nb.pack(fill="both", expand=True, padx=6, pady=6)
+        gen = ttk.Frame(nb, padding=10)
+        nb.add(gen, text="General")
+        for k, label in FLAG_LABELS:
+            ttk.Checkbutton(gen, text=label, variable=self.vars[k],
+                            command=lambda k=k: self.set_flag(k)).pack(anchor="w", pady=1)
+        ttk.Label(gen, text="Tamaño (todas a escala según su estatura en el anime):").pack(
+            anchor="w", pady=(10, 2))
+        row = ttk.Frame(gen)
+        row.pack(anchor="w")
+        for i, (label, px) in enumerate(SIZE_OPTIONS):
+            ttk.Radiobutton(row, text=label, value=px, variable=self.size_var,
+                            command=self.set_size).grid(row=i // 4, column=i % 4, sticky="w",
+                                                         padx=4)
+        ttk.Label(gen, text="Ctrl + Alt + M: esconder / mostrar todas las mascotas.").pack(
+            anchor="w", pady=(10, 0))
+        habs = ttk.Frame(nb)
+        nb.add(habs, text="Habilidades")
+        canvas = tk.Canvas(habs, width=520, height=420, highlightthickness=0)
+        sb = ttk.Scrollbar(habs, orient="vertical", command=canvas.yview)
+        inner = ttk.Frame(canvas, padding=8)
+        inner.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.create_window((0, 0), window=inner, anchor="nw")
+        canvas.configure(yscrollcommand=sb.set)
+        canvas.pack(side="left", fill="both", expand=True)
+        sb.pack(side="right", fill="y")
+        canvas.bind_all("<MouseWheel>", lambda e: canvas.yview_scroll(-int(e.delta / 120), "units")
+                        if self.config_win is not None else None)
+        self.ability_vars = []
+        for skin, path in list_skins():
+            cfg = skin_config(path)
+            name = cfg.get("personaje") or skin.capitalize()
+            items = list(cfg.get("habilidades") or [])
+            items += [k for k, key in (("celos", "celosa"), ("proteger", "protector"),
+                                       ("puertas", "puertas")) if cfg.get(key)]
+            if not items:
+                continue
+            box = ttk.LabelFrame(inner, text="%s  (poder %s, %s cm)" % (
+                name, cfg.get("poder", DEFAULT_POWER), cfg.get("altura_cm", "?")), padding=6)
+            box.pack(fill="x", pady=4)
+            off = self.disabled_abilities(name)
+            for i, h in enumerate(items):
+                var = tk.BooleanVar(value=h not in off)
+                self.ability_vars.append(var)
+                ttk.Checkbutton(box, text=ABILITY_LABELS.get(h, h), variable=var,
+                                command=lambda n=name, h=h, v=var: self.toggle_ability(n, h, v.get())
+                                ).grid(row=i // 2, column=i % 2, sticky="w", padx=4)
+        ttk.Button(w, text="Cerrar", command=lambda: (w.destroy(),
+                                                      setattr(self, "config_win", None))).pack(pady=6)
+
+    def open_stats(self):
+        if self.stats_win is not None:
+            try:
+                self.stats_win.destroy()
+            except tk.TclError:
+                pass
+        w = tk.Toplevel(self.root)
+        self.stats_win = w
+        w.title("Estadísticas y logros - Mascotas")
+        w.attributes("-topmost", True)
+        txt = tk.Text(w, width=62, height=34, wrap="word", font=("Segoe UI", 10), bd=0,
+                      padx=10, pady=8)
+        txt.pack(fill="both", expand=True)
+        txt.tag_configure("h", font=("Segoe UI", 12, "bold"), spacing1=8)
+        txt.tag_configure("ok", foreground="#1c8a3a")
+        txt.tag_configure("no", foreground="#999999")
+        st = self.st
+        txt.insert("end", "Estadísticas\n", "h")
+        for key, label in (("caricias", "Caricias"), ("galletas", "Galletas dadas"),
+                           ("peleas", "Peleas entre mascotas"), ("kos", "Desmayos"),
+                           ("curaciones", "Curaciones"), ("platos", "Platos de Rem"),
+                           ("regresos", "Regresos por muerte"), ("torneos", "Torneos"),
+                           ("escondidas", "Escondidas encontradas"),
+                           ("desvios", "Disparos desviados por Reinhard"),
+                           ("atrapadas", "Atrapadas en el aire"), ("minutos", "Minutos juntos")):
+            txt.insert("end", "  %s: %d\n" % (label, st(key)))
+        wins = (self.settings.get("estadisticas") or {}).get("victorias") or {}
+        champs = (self.settings.get("estadisticas") or {}).get("campeones") or {}
+        txt.insert("end", "Cariño contigo y victorias\n", "h")
+        names = sorted({p.name() for p in self.pets} | set(self.settings.get("cariño") or {}))
+        for n in names:
+            a = self.affection(n)
+            bar = "♥" * (a // 10) + "♡" * ((CARINO_MAX - a) // 10)
+            txt.insert("end", "  %-9s %s %3d   victorias: %d   torneos: %d\n" % (
+                n, bar, a, wins.get(n, 0), champs.get(n, 0)))
+        got = self.settings.get("logros") or []
+        txt.insert("end", "Logros (%d/%d)\n" % (len(got), len(ACHIEVEMENTS)), "h")
+        for key, title, desc, _c in ACHIEVEMENTS:
+            if key in got:
+                txt.insert("end", "  ✔ %s — %s\n" % (title, desc), "ok")
+            else:
+                txt.insert("end", "  ✖ %s — %s\n" % (title, desc), "no")
+        txt.config(state="disabled")
+        tk.Button(w, text="Cerrar", command=w.destroy).pack(pady=6)
+
     def quit(self):
-        for b_ in self.beams + self.projectiles:
+        self.save()
+        for b_ in self.beams + self.projectiles + self.props:
             b_.destroy()
+        if self.snow:
+            self.snow.destroy()
         if self.treat:
             self.treat.destroy()
         if winmm:

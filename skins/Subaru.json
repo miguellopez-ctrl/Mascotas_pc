@@ -1,0 +1,455 @@
+{
+  "personaje": "Subaru",
+  "altura_cm": 173,
+  "poder": 1,
+  "velocidad": 1.0,
+  "disparo": "bala",
+  "habilidades": [
+    "shamak",
+    "mano_invisible",
+    "presume",
+    "regreso"
+  ],
+  "particulas": [
+    "#ece6ff",
+    "#a593d6",
+    "#5f4c8f",
+    "#2a2140"
+  ],
+  "colores": {
+    "disparo": [
+      "#f1ecff",
+      "#a08bd8",
+      "#5b4a86",
+      "#2c2340"
+    ],
+    "shamak": [
+      "#6b5a8e",
+      "#3a2f52",
+      "#1d1729",
+      "#0a080f"
+    ]
+  },
+  "combinar_con_default": false,
+  "animaciones": {
+    "quieta": [
+      [
+        7,
+        0
+      ]
+    ],
+    "mira": [
+      [
+        0,
+        0
+      ]
+    ],
+    "gira": [
+      [
+        7,
+        0
+      ]
+    ],
+    "camina": [
+      [
+        0,
+        0,
+        15
+      ]
+    ],
+    "corre": [
+      [
+        0,
+        0,
+        15
+      ]
+    ],
+    "sentada": [
+      [
+        2,
+        0,
+        5
+      ]
+    ],
+    "dormida_inicio": [
+      [
+        9,
+        0,
+        4
+      ],
+      [
+        3,
+        0,
+        4
+      ]
+    ],
+    "dormida": [
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        6
+      ]
+    ],
+    "despierta": [
+      [
+        6,
+        0
+      ]
+    ],
+    "salta": [
+      [
+        5,
+        0
+      ],
+      [
+        5,
+        1
+      ]
+    ],
+    "cae": [
+      [
+        5,
+        2
+      ],
+      [
+        5,
+        3
+      ]
+    ],
+    "aterriza": [
+      [
+        5,
+        4
+      ],
+      [
+        5,
+        5
+      ]
+    ],
+    "ko": [
+      [
+        5,
+        5
+      ]
+    ],
+    "trepa": [
+      [
+        4,
+        0,
+        4
+      ]
+    ],
+    "arrastrada": [
+      [
+        5,
+        3
+      ]
+    ],
+    "feliz": [
+      [
+        6,
+        0,
+        6
+      ]
+    ],
+    "presume": [
+      [
+        6,
+        6
+      ]
+    ],
+    "extra_pregunta": [
+      [
+        7,
+        1
+      ]
+    ],
+    "extra_regalo": [
+      [
+        7,
+        2
+      ]
+    ],
+    "extra_musica": [
+      [
+        7,
+        3
+      ]
+    ],
+    "extra_gatito": [
+      [
+        7,
+        4
+      ],
+      [
+        7,
+        5
+      ]
+    ],
+    "extra_saluda": [
+      [
+        6,
+        5
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        6,
+        5
+      ],
+      [
+        6,
+        6
+      ]
+    ]
+  },
+  "sin_espejo": [
+    "quieta",
+    "gira",
+    "sentada",
+    "feliz",
+    "despierta",
+    "arrastrada",
+    "salta",
+    "cae",
+    "dormida_inicio",
+    "dormida",
+    "extra_",
+    "presume",
+    "ko"
+  ],
+  "frases": {
+    "saludo": [
+      "¡Yo! Natsuki Subaru, a tu servicio.",
+      "¡Llegó el hombre del momento!",
+      "¿Me extrañaste? Obvio que sí."
+    ],
+    "saludo_otra": [
+      "¡Hola, {otra}!"
+    ],
+    "aleatorio": [
+      "Emilia-tan es un ángel...",
+      "Ya sé, ya sé: soy un genio incomprendido.",
+      "¿Y si hago mayonesa casera?",
+      "Nadie hace cunitas de estambre como yo.",
+      "Ex-NEET de nivel experto, a tus órdenes.",
+      "¡Puedo hacerlo! ...creo.",
+      "¿Radio-gimnasia? ¡Uno, dos, tres!"
+    ],
+    "comer": [
+      "¡Está buenísimo!",
+      "¡Gracias! Esto me da vida."
+    ],
+    "sin_galleta": [
+      "¡Oye, {otra}, era mía!",
+      "Bueno... la próxima invito yo."
+    ],
+    "despierta": [
+      "¿Eh? ¿Dónde... ah, aquí.",
+      "Cinco minutitos más..."
+    ],
+    "disparo": [
+      "¡Toma esto!",
+      "¡Ataque sorpresa!"
+    ],
+    "pelea": [
+      "¡Prepárate, {otra}! ...con cuidadito, ¿sí?",
+      "¡Ven, {otra}! ...espero no morir."
+    ],
+    "ataque": [
+      "¡Toma!",
+      "¡Subaru Punch!"
+    ],
+    "golpe": [
+      "¡Ay! ¡Eso dolió!",
+      "¡Auch!"
+    ],
+    "esquiva": [
+      "¡Ja! ¡Ni me tocaste!",
+      "¡Reflejos de gamer!"
+    ],
+    "gana": [
+      "¡No lo puedo creer! ¡Gané!",
+      "¡Natsuki Subaru, invicto!"
+    ],
+    "pierde": [
+      "Era obvio...",
+      "Ya me acostumbré a perder, {otra}."
+    ],
+    "juego": [
+      "¡Te voy a atrapar, {otra}!"
+    ],
+    "juego_huye": [
+      "¡No me alcanzas!"
+    ],
+    "atrapa": [
+      "¡Te tengo, {otra}!"
+    ],
+    "atrapada": [
+      "¡No vale!"
+    ],
+    "fin_juego": [
+      "¡Otra, otra!",
+      "Uf, ya no tengo condición."
+    ],
+    "mouse_agarra": [
+      "¡Este mouse es mío!"
+    ],
+    "mouse_gana": [
+      "¡Gané el mouse!"
+    ],
+    "mouse_pierde": [
+      "Ok, ok, tómalo."
+    ],
+    "travesura": [
+      "Shhh, yo no fui."
+    ],
+    "te_invitada": [
+      "Gracias, {otra}... ¿qué le pusiste al té?"
+    ],
+    "respuesta_curiosa": [
+      "¿Yo? Un chico normal que vino de otro mundo."
+    ],
+    "regreso": [
+      "...¿Otra vez aquí?",
+      "Volví a este punto...",
+      "Está bien. Lo intento otra vez."
+    ],
+    "shamak": [
+      "¡Shamak!",
+      "¡Nube de oscuridad!"
+    ],
+    "mano_invisible": [
+      "¡Mano invisible!",
+      "Ugh... mi corazón..."
+    ],
+    "presume": [
+      "¡Mi nombre es Natsuki Subaru!",
+      "¡Ignorante del mundo, pero sin igual!"
+    ],
+    "caricia": [
+      "¡Jeje, gracias!",
+      "¡Ya sabía que te caía bien!"
+    ],
+    "caricia_alta": [
+      "¡Somos los mejores amigos!",
+      "Contigo puedo con todo."
+    ],
+    "ko": [
+      "Me... morí... otra vez...",
+      "Ugh..."
+    ],
+    "buenos_dias": [
+      "¡Buenos días! ¡Hora de la radio-gimnasia!",
+      "¡Arriba, que el día no se gana solo!"
+    ],
+    "buenas_noches": [
+      "Ya es tarde... hasta yo me voy a dormir."
+    ],
+    "miedo": [
+      "¡S-Satella! No te acerques...",
+      "Tranquilo, Subaru, tranquilo..."
+    ],
+    "molesta": [
+      "Hey, {otra}, ¿qué onda?"
+    ],
+    "cariño": [
+      "¡{otra}!"
+    ],
+    "gracias_cura": [
+      "¡Gracias, {otra}!"
+    ],
+    "plato_recibe": [
+      "¡Wow! ¡Gracias, {otra}!"
+    ]
+  },
+  "relaciones": {
+    "Emilia": {
+      "afinidad": 3,
+      "frases": {
+        "cariño": [
+          "¡Emilia-tan! ¡Maji tenshi!",
+          "Emilia, te ves hermosa hoy."
+        ],
+        "pelea": [
+          "Emilia-tan, ¿de verdad quieres pelear?"
+        ],
+        "plato_recibe": [
+          "¡Emilia-tan me cuida!"
+        ]
+      }
+    },
+    "Rem": {
+      "afinidad": 3,
+      "frases": {
+        "cariño": [
+          "¡Rem! Eres la mejor.",
+          "Gracias por siempre creer en mí, Rem."
+        ],
+        "plato_recibe": [
+          "¡La comida de Rem es la mejor del mundo!"
+        ]
+      }
+    },
+    "Beatrice": {
+      "afinidad": 3,
+      "frases": {
+        "cariño": [
+          "¡Beako!",
+          "¿Qué onda, Beako? ¿Me extrañaste?"
+        ],
+        "pelea": [
+          "¡Beako, somos compañeros!"
+        ]
+      }
+    },
+    "Satella": {
+      "afinidad": -2,
+      "frases": {
+        "molesta": [
+          "¡S-Satella!...",
+          "No... otra vez tú no..."
+        ],
+        "pelea": [
+          "¡Satella! No te tengo miedo... mucho."
+        ]
+      }
+    },
+    "Echidna": {
+      "afinidad": 0,
+      "frases": {
+        "cariño": [
+          "Echidna... ¿qué tramas ahora?"
+        ],
+        "te_invitada": [
+          "Echidna... ¿esto es té normal, verdad?"
+        ]
+      }
+    },
+    "Reinhard": {
+      "afinidad": 2,
+      "frases": {
+        "cariño": [
+          "¡Reinhard, amigo!",
+          "Qué bueno que estás aquí, Reinhard."
+        ],
+        "pelea": [
+          "¡¿Contra Reinhard?! ¡Estoy muerto!"
+        ]
+      }
+    },
+    "Shaula": {
+      "afinidad": 1,
+      "frases": {
+        "cariño": [
+          "Shaula, ya te dije que no soy tu maestro..."
+        ]
+      }
+    }
+  }
+}

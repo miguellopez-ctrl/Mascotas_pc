@@ -3,7 +3,9 @@
   "velocidad": 1.3,
   "habilidades": [
     "rayo",
-    "super_salto"
+    "super_salto",
+    "escorpion",
+    "maestro"
   ],
   "particulas": [
     "#fff1c9",
@@ -150,10 +152,6 @@
     "extra_escorpion": [
       [
         4,
-        7
-      ],
-      [
-        4,
         8
       ]
     ],
@@ -288,6 +286,37 @@
     "respuesta_curiosa": [
       "¡Ni idea! ¡Juguemos mejor!",
       "¿Eh? Me aburro~"
+    ],
+    "caricia": [
+      "¡Jeje! ¡Más, más!",
+      "¡Wiii!"
+    ],
+    "caricia_alta": [
+      "¡Te quiero muchísimo!",
+      "¡Eres mi favorito después del maestro!"
+    ],
+    "escorpion": [
+      "¡Modo escorpión!",
+      "¡Clac clac!"
+    ],
+    "maestro": [
+      "¡Maestro! ¡Espéreme!",
+      "¡Voy con usted, maestro!"
+    ],
+    "ko": [
+      "Me... ganaron... maestro..."
+    ],
+    "buenos_dias": [
+      "¡Buenos díaaas!"
+    ],
+    "buenas_noches": [
+      "¿Ya a dormir? Bueeeno."
+    ],
+    "gracias_cura": [
+      "¡Gracias, {otra}! ¡Como nueva!"
+    ],
+    "plato_recibe": [
+      "¡Ñam ñam! ¡Gracias!"
     ]
   },
   "disparo": "rayo",
@@ -333,6 +362,19 @@
     },
     "Beatrice": {
       "afinidad": 1
+    },
+    "Subaru": {
+      "afinidad": 3,
+      "frases": {
+        "cariño": [
+          "¡Maestro! ¡Maestrooo!",
+          "¡Por fin regresó, maestro!"
+        ],
+        "pelea": [
+          "¡No puedo pelear con el maestro!"
+        ]
+      }
     }
-  }
+  },
+  "altura_cm": 170
 }

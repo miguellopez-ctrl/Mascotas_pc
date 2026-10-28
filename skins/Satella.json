@@ -5,7 +5,8 @@
   "disparo": "mano",
   "habilidades": [
     "sombra",
-    "manos"
+    "manos",
+    "oscuridad"
   ],
   "particulas": [
     "#d9c2ff",
@@ -31,8 +32,8 @@
   "animaciones": {
     "quieta": [
       [
-        0,
-        7
+        1,
+        0
       ]
     ],
     "mira": [
@@ -43,75 +44,86 @@
     ],
     "gira": [
       [
-        0,
-        7
+        1,
+        0
       ]
     ],
     "camina": [
       [
         0,
         0,
-        6
+        16
       ]
     ],
     "corre": [
       [
         0,
         0,
-        6
+        16
       ]
     ],
     "sentada": [
       [
-        1,
-        0
-      ],
-      [
-        1,
-        1
+        2,
+        0,
+        4
       ]
     ],
     "dormida_inicio": [
       [
-        5,
-        0,
-        4
+        "@",
+        272,
+        895
+      ],
+      [
+        "@",
+        361,
+        892
+      ],
+      [
+        "@",
+        446,
+        893
+      ],
+      [
+        "@",
+        531,
+        893
       ],
       [
         2,
-        0,
-        6
+        5,
+        7
       ]
     ],
     "dormida": [
       [
         2,
-        7
+        8
       ],
       [
         2,
-        8
+        9
       ]
     ],
     "despierta": [
       [
-        4,
-        0
+        "@",
+        73,
+        735
       ]
     ],
     "salta": [
       [
         3,
-        6
+        7
+      ],
+      [
+        3,
+        8
       ]
     ],
     "cae": [
-      [
-        3,
-        7
-      ]
-    ],
-    "aterriza": [
       [
         3,
         9
@@ -121,64 +133,108 @@
         10
       ]
     ],
+    "aterriza": [
+      [
+        3,
+        11
+      ],
+      [
+        3,
+        12
+      ]
+    ],
+    "ko": [
+      [
+        3,
+        13
+      ]
+    ],
     "trepa": [
       [
         3,
         0,
-        4
+        5
       ]
     ],
     "arrastrada": [
       [
-        4,
+        3,
         9
       ]
     ],
     "feliz": [
       [
-        4,
-        0,
-        5
+        "@",
+        73,
+        735
+      ],
+      [
+        "@",
+        170,
+        736
+      ],
+      [
+        "@",
+        264,
+        737
+      ],
+      [
+        "@",
+        362,
+        737
+      ],
+      [
+        "@",
+        457,
+        736
+      ],
+      [
+        "@",
+        556,
+        736
+      ]
+    ],
+    "extra_pregunta": [
+      [
+        "@",
+        971,
+        745
       ]
     ],
     "extra_regalo": [
       [
-        4,
-        8
-      ]
-    ],
-    "extra_mano": [
-      [
-        4,
-        6
-      ],
-      [
-        4,
-        7
+        "#",
+        1022,
+        686,
+        1133,
+        812
       ]
     ],
     "extra_saluda": [
       [
-        4,
-        1
-      ],
+        "#",
+        1135,
+        668,
+        1240,
+        812
+      ]
+    ],
+    "extra_mariposas": [
       [
-        4,
-        2
-      ],
-      [
-        4,
-        1
-      ],
-      [
-        4,
-        2
+        "#",
+        1242,
+        668,
+        1336,
+        812
       ]
     ],
     "sombra": [
       [
-        5,
-        9
+        "#",
+        1338,
+        668,
+        1430,
+        806
       ]
     ]
   },
@@ -194,13 +250,14 @@
     "dormida_inicio",
     "dormida",
     "extra_",
-    "sombra"
+    "sombra",
+    "ko"
   ],
   "frases": {
     "saludo": [
       "Te amo.",
       "Por fin llegaste...",
-      "Te estaba esperando."
+      "Te estaba esperando, Subaru..."
     ],
     "saludo_otra": [
       "Hola, {otra}.",
@@ -210,8 +267,9 @@
       "Te amo.",
       "Te amo, te amo, te amo.",
       "No te vayas...",
-      "¿Me recuerdas?",
-      "Quédate conmigo un poco más."
+      "¿Dónde está Subaru?",
+      "Quédate conmigo un poco más.",
+      "Subaru... te amo."
     ],
     "comer": [
       "Gracias... de verdad.",
@@ -300,6 +358,41 @@
     "respuesta_curiosa": [
       "...",
       "Solo quiero que alguien se quede."
+    ],
+    "celos": [
+      "¿Por qué a {otra} y no a mí?",
+      "No te le acerques, {otra}...",
+      "{otra}... no."
+    ],
+    "oscuridad": [
+      "Te amo...",
+      "Te amo... te amo...",
+      "Quédate conmigo...",
+      "Nunca te dejaré ir..."
+    ],
+    "caricia": [
+      "Te amo.",
+      "No me sueltes..."
+    ],
+    "caricia_alta": [
+      "Te amo, te amo, te amo.",
+      "Nunca te dejaré ir."
+    ],
+    "ko": [
+      "...",
+      "Aún así... te amo..."
+    ],
+    "buenos_dias": [
+      "Buenos días... soñé contigo."
+    ],
+    "buenas_noches": [
+      "Te cuidaré mientras duermes."
+    ],
+    "gracias_cura": [
+      "Gracias... {otra}."
+    ],
+    "plato_recibe": [
+      "Es cálido... gracias, {otra}."
     ]
   },
   "poder": 8,
@@ -337,13 +430,39 @@
       }
     },
     "Rem": {
-      "afinidad": 0
+      "afinidad": -1,
+      "frases": {
+        "molesta": [
+          "Aléjate de él, Rem."
+        ]
+      }
     },
     "Beatrice": {
       "afinidad": 0
     },
     "Shaula": {
       "afinidad": 0
+    },
+    "Subaru": {
+      "afinidad": 3,
+      "frases": {
+        "cariño": [
+          "Te amo, Subaru.",
+          "Te amo te amo te amo te amo te amo...",
+          "Subaru... quédate conmigo."
+        ],
+        "saludo_otra": [
+          "Subaru... por fin."
+        ],
+        "pelea": [
+          "No quiero lastimarte, Subaru..."
+        ],
+        "gana": [
+          "Perdóname, Subaru... te amo."
+        ]
+      }
     }
-  }
+  },
+  "altura_cm": 164,
+  "celosa": true
 }

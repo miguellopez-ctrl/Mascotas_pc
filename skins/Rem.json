@@ -4,7 +4,10 @@
   "habilidades": [
     "limpiar",
     "aura",
-    "lucero"
+    "lucero",
+    "cocinar",
+    "curar",
+    "oni"
   ],
   "particulas": [
     "#ffffff",
@@ -137,6 +140,49 @@
     "respuesta_curiosa": [
       "Rem no entiende la pregunta...",
       "Rem solo quiere ser útil."
+    ],
+    "caricia": [
+      "Rem está feliz.",
+      "Gracias... a Rem le da un poco de pena."
+    ],
+    "caricia_alta": [
+      "Rem te quiere mucho.",
+      "Rem siempre estará a tu lado."
+    ],
+    "cocinar": [
+      "Rem preparará algo rico.",
+      "¡A cocinar!"
+    ],
+    "plato": [
+      "¡Toma, {otra}! Lo hizo Rem.",
+      "Para ti, {otra}."
+    ],
+    "plato_usuario": [
+      "Esto es para ti. ¡Provecho!"
+    ],
+    "curar": [
+      "Agua sanadora... ya pasó.",
+      "Quédate quieta, Rem te cura."
+    ],
+    "oni": [
+      "¡No te acerques a Subaru-kun!",
+      "...modo oni."
+    ],
+    "ko": [
+      "Rem... ya no puede...",
+      "Perdón..."
+    ],
+    "buenos_dias": [
+      "¡Buenos días! Rem ya preparó el desayuno."
+    ],
+    "buenas_noches": [
+      "Ya es hora de descansar."
+    ],
+    "gracias_cura": [
+      "Gracias, {otra}."
+    ],
+    "plato_recibe": [
+      "¡Gracias, {otra}!"
     ]
   },
   "disparo": "lucero",
@@ -196,6 +242,26 @@
     },
     "Shaula": {
       "afinidad": 0
+    },
+    "Subaru": {
+      "afinidad": 3,
+      "frases": {
+        "cariño": [
+          "¡Subaru-kun!",
+          "Rem te ama, Subaru-kun."
+        ],
+        "pelea": [
+          "Rem no quiere pelear con Subaru-kun..."
+        ],
+        "plato": [
+          "¡Subaru-kun! Rem te hizo esto."
+        ],
+        "curar": [
+          "¡Subaru-kun! Rem te cura ahora mismo."
+        ]
+      }
     }
-  }
+  },
+  "altura_cm": 154,
+  "sanadora": true
 }

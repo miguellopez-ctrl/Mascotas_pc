@@ -4,7 +4,10 @@
   "habilidades": [
     "nieve",
     "cristales",
-    "congelar"
+    "congelar",
+    "congelar_ventana",
+    "curar",
+    "nevada"
   ],
   "particulas": [
     "#ffffff",
@@ -137,6 +140,42 @@
     "respuesta_curiosa": [
       "Mmm... no sé, ¿tú qué crees?",
       "¡Qué pregunta tan difícil!"
+    ],
+    "caricia": [
+      "Jeje, ¡gracias!",
+      "Eres muy amable."
+    ],
+    "caricia_alta": [
+      "¡Me haces muy feliz!",
+      "Gracias por cuidarme siempre."
+    ],
+    "congelar_ventana": [
+      "¡Uy! Creo que congelé tu ventana...",
+      "¡Hielo!"
+    ],
+    "nevada": [
+      "¡Mira, está nevando!",
+      "Un poquito de nieve para ti."
+    ],
+    "curar": [
+      "Déjame curarte.",
+      "Ya, ya... vas a estar bien."
+    ],
+    "ko": [
+      "Ay... me mareé...",
+      "Lo siento..."
+    ],
+    "buenos_dias": [
+      "¡Buenos días! Hoy será un gran día."
+    ],
+    "buenas_noches": [
+      "Buenas noches. Descansa mucho, ¿sí?"
+    ],
+    "gracias_cura": [
+      "¡Gracias, {otra}!"
+    ],
+    "plato_recibe": [
+      "¡Qué rico! Gracias, {otra}."
     ]
   },
   "disparo": "hielo",
@@ -189,6 +228,28 @@
     },
     "Shaula": {
       "afinidad": 1
+    },
+    "Subaru": {
+      "afinidad": 3,
+      "frases": {
+        "cariño": [
+          "¡Subaru! ¿Otra vez haciendo tonterías?",
+          "Gracias por estar aquí, Subaru."
+        ],
+        "curar": [
+          "¡Subaru! ¿Otra vez te lastimaste?"
+        ]
+      }
     }
+  },
+  "altura_cm": 164,
+  "sanadora": true,
+  "animaciones": {
+    "despierta": [
+      [
+        6,
+        0
+      ]
+    ]
   }
 }

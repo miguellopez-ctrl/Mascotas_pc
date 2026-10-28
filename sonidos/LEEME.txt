@@ -1,0 +1,15 @@
+Pon aquí archivos .wav (cortitos) y se reproducen cuando pasa cada cosa
+(activa "Sonidos" en el menú):
+
+  ko.wav          alguien se desmaya en una pelea
+  logro.wav       logro desbloqueado
+  torneo.wav      empieza / termina un torneo
+  regreso.wav     Regreso por muerte de Subaru
+  encontrada.wav  la encontraste en las escondidas
+  puerta.wav      puerta de Beatrice
+  hielo.wav       Emilia congela una ventana
+  comer.wav       se come una galleta
+  caricia.wav     la acaricias
+
+Si falta alguno, se usa un sonido de Windows (solo para ko, logro, torneo,
+regreso y encontrada) o no suena nada.
